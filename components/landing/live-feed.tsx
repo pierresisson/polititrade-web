@@ -4,10 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { transactions, getPartyColor } from "@/lib/mock-data";
+import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 
 export function LiveFeed() {
+  const { t } = useTranslations();
+  const localePath = useLocalePath();
   const [showAll, setShowAll] = useState(false);
   const displayed = showAll ? transactions : transactions.slice(0, 5);
+
+  const formatDaysAgo = (days: number) => {
+    if (days === 0) return t("liveFeed.today");
+    if (days === 1) return t("liveFeed.yesterday");
+    return `${days}${t("liveFeed.daysAgo")}`;
+  };
 
   return (
     <section id="feed" className="mx-auto max-w-6xl px-6 py-16 lg:py-24">
@@ -15,17 +24,17 @@ export function LiveFeed() {
       <div className="mb-8 flex items-end justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-widest text-primary">
-            Live Feed
+            {t("liveFeed.eyebrow")}
           </p>
           <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            Latest Disclosed Trades
+            {t("liveFeed.title")}
           </h2>
         </div>
         <Link
-          href="/transactions"
+          href={localePath("/transactions")}
           className="editorial-link hidden text-sm font-medium sm:inline"
         >
-          View all transactions
+          {t("liveFeed.viewAll")}
         </Link>
       </div>
 
@@ -35,19 +44,19 @@ export function LiveFeed() {
           <thead>
             <tr className="border-b-2 border-foreground">
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Member
+                {t("liveFeed.member")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Stock
+                {t("liveFeed.stock")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Type
+                {t("liveFeed.type")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Amount
+                {t("liveFeed.amount")}
               </th>
               <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
-                Filed
+                {t("liveFeed.filed")}
               </th>
             </tr>
           </thead>
@@ -84,7 +93,7 @@ export function LiveFeed() {
                     ) : (
                       <ArrowDownRight className="h-3.5 w-3.5" />
                     )}
-                    {tx.type === "buy" ? "Buy" : "Sell"}
+                    {tx.type === "buy" ? t("liveFeed.buy") : t("liveFeed.sell")}
                   </span>
                 </td>
                 <td className="py-4">
@@ -92,7 +101,7 @@ export function LiveFeed() {
                 </td>
                 <td className="py-4 text-right">
                   <span className="text-sm text-muted-foreground">
-                    {tx.daysAgo === 0 ? "Today" : tx.daysAgo === 1 ? "Yesterday" : `${tx.daysAgo}d ago`}
+                    {formatDaysAgo(tx.daysAgo)}
                   </span>
                 </td>
               </tr>
@@ -107,16 +116,16 @@ export function LiveFeed() {
           onClick={() => setShowAll(true)}
           className="mt-6 text-sm font-medium text-primary hover:underline"
         >
-          Show more transactions
+          {t("common.showMore")}
         </button>
       )}
 
       {/* Mobile CTA */}
       <Link
-        href="/transactions"
+        href={localePath("/transactions")}
         className="mt-6 block text-sm font-medium text-primary hover:underline sm:hidden"
       >
-        View all transactions →
+        {t("liveFeed.viewAll")} →
       </Link>
     </section>
   );

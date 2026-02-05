@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ArrowDownRight, Filter } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { transactions } from "@/lib/mock-data";
+import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeType } from "@/lib/mock-data";
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 };
 
 export function PoliticianTransactions({ politicianId }: Props) {
+  const { t } = useTranslations();
+  const localePath = useLocalePath();
   const [filter, setFilter] = useState<TradeType | "all">("all");
 
   // Get transactions for this politician
@@ -23,18 +26,18 @@ export function PoliticianTransactions({ politicianId }: Props) {
   const filteredTransactions =
     filter === "all"
       ? politicianTransactions
-      : politicianTransactions.filter((t) => t.type === filter);
+      : politicianTransactions.filter((tx) => tx.type === filter);
 
   // If no transactions, show message
   if (politicianTransactions.length === 0) {
     return (
       <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Recent Transactions
+          {t("politicianDetail.recentTransactions")}
         </p>
         <div className="border border-border bg-card p-8 text-center">
           <p className="text-muted-foreground">
-            No recent transactions disclosed for this member.
+            {t("politicianDetail.noTransactions")}
           </p>
         </div>
       </section>
@@ -47,10 +50,10 @@ export function PoliticianTransactions({ politicianId }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Recent Transactions
+            {t("politicianDetail.recentTransactions")}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {politicianTransactions.length} trades in the last 12 months
+            {politicianTransactions.length} {t("politicianDetail.tradesInLast12Months")}
           </p>
         </div>
 
@@ -64,7 +67,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
                 : "hover:bg-secondary"
             }`}
           >
-            All
+            {t("common.all")}
           </button>
           <button
             onClick={() => setFilter("buy")}
@@ -74,7 +77,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
                 : "hover:bg-secondary"
             }`}
           >
-            Buys
+            {t("politicianDetail.buys")}
           </button>
           <button
             onClick={() => setFilter("sell")}
@@ -84,7 +87,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
                 : "hover:bg-secondary"
             }`}
           >
-            Sells
+            {t("politicianDetail.sells")}
           </button>
         </div>
       </div>
@@ -95,19 +98,19 @@ export function PoliticianTransactions({ politicianId }: Props) {
           <thead>
             <tr className="border-b-2 border-foreground">
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Stock
+                {t("liveFeed.stock")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Type
+                {t("liveFeed.type")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Amount
+                {t("liveFeed.amount")}
               </th>
               <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                Trade Date
+                {t("politicianDetail.tradeDate")}
               </th>
               <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
-                Filed
+                {t("liveFeed.filed")}
               </th>
             </tr>
           </thead>
@@ -118,7 +121,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
                 className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
               >
                 <td className="py-4">
-                  <Link href={`/stock/${tx.stock}`} className="block">
+                  <Link href={localePath(`/stock/${tx.stock}`)} className="block">
                     <span className="font-mono text-lg font-semibold group-hover:text-primary">
                       {tx.stock}
                     </span>
@@ -138,7 +141,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
                     ) : (
                       <ArrowDownRight className="h-3.5 w-3.5" />
                     )}
-                    {tx.type === "buy" ? "Buy" : "Sell"}
+                    {tx.type === "buy" ? t("liveFeed.buy") : t("liveFeed.sell")}
                   </span>
                 </td>
                 <td className="py-4">
@@ -158,7 +161,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
       {filteredTransactions.length === 0 && (
         <div className="border border-border bg-card p-8 text-center">
           <p className="text-muted-foreground">
-            No {filter === "buy" ? "buy" : "sell"} transactions found.
+            {t("politicianDetail.noFilteredTransactions").replace("{type}", filter === "buy" ? t("politicianDetail.buys").toLowerCase() : t("politicianDetail.sells").toLowerCase())}
           </p>
           <Button
             variant="outline"
@@ -166,15 +169,14 @@ export function PoliticianTransactions({ politicianId }: Props) {
             className="mt-3"
             onClick={() => setFilter("all")}
           >
-            Show all transactions
+            {t("politicianDetail.showAllTransactions")}
           </Button>
         </div>
       )}
 
       {/* Source note */}
       <p className="mt-6 text-xs text-muted-foreground">
-        Data sourced from official congressional financial disclosure filings.
-        Amounts shown are reported ranges, not exact figures.
+        {t("politicianDetail.dataSource")}
       </p>
     </section>
   );

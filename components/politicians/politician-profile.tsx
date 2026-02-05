@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Bell, ExternalLink } from "lucide-react";
 import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { useTranslations } from "@/lib/i18n-context";
 import type { Politician } from "@/lib/mock-data";
 
 type Props = {
@@ -8,6 +11,8 @@ type Props = {
 };
 
 export function PoliticianProfile({ politician }: Props) {
+  const { t } = useTranslations();
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -34,11 +39,11 @@ export function PoliticianProfile({ politician }: Props) {
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {politician.party === "D" ? "Democrat" : "Republican"}
+                {politician.party === "D" ? t("politicians.democrat") : t("politicians.republican")}
               </span>
               {/* Chamber */}
               <span className="text-muted-foreground">
-                {politician.chamber}
+                {politician.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
               </span>
               {/* State */}
               <span className="text-muted-foreground">
@@ -46,8 +51,8 @@ export function PoliticianProfile({ politician }: Props) {
               </span>
             </div>
             <p className="mt-3 text-muted-foreground">
-              Member of the U.S. {politician.chamber} of Representatives
-              {politician.chamber === "Senate" ? "" : ` from ${politician.state}`}
+              {t("politicianDetail.memberOf")} {politician.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+              {politician.chamber === "House" ? ` · ${politician.state}` : ""}
             </p>
           </div>
         </div>
@@ -56,11 +61,11 @@ export function PoliticianProfile({ politician }: Props) {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-2">
             <Bell className="h-4 w-4" />
-            Follow
+            {t("common.follow")}
           </Button>
           <Button variant="outline" size="sm" className="gap-2">
             <ExternalLink className="h-4 w-4" />
-            Official Page
+            {t("politicianDetail.officialPage")}
           </Button>
         </div>
       </div>

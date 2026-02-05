@@ -1,4 +1,7 @@
+"use client";
+
 import { TrendingUp, DollarSign, BarChart3, Briefcase } from "lucide-react";
+import { useTranslations } from "@/lib/i18n-context";
 import type { Politician } from "@/lib/mock-data";
 
 type Props = {
@@ -6,30 +9,32 @@ type Props = {
 };
 
 export function PoliticianStats({ politician }: Props) {
+  const { t } = useTranslations();
+
   const stats = [
     {
-      label: "Total Trades",
+      label: t("politicianDetail.totalTrades"),
       value: politician.trades.toString(),
-      subtext: "Last 12 months",
+      subtext: t("politicianDetail.last12Months"),
       icon: BarChart3,
     },
     {
-      label: "Trading Volume",
+      label: t("politicianDetail.tradingVolume"),
       value: politician.volume,
-      subtext: "Disclosed amount",
+      subtext: t("politicianDetail.disclosedAmount"),
       icon: DollarSign,
     },
     {
-      label: "Return YTD",
+      label: t("politicians.returnYTD"),
       value: politician.returnYTD,
-      subtext: "Based on disclosed trades",
+      subtext: t("politicianDetail.basedOnTrades"),
       icon: TrendingUp,
       highlight: true,
     },
     {
-      label: "Top Holding",
+      label: t("politicians.topHolding"),
       value: politician.topHolding,
-      subtext: "Most traded stock",
+      subtext: t("politicianDetail.mostTradedStock"),
       icon: Briefcase,
       mono: true,
     },
@@ -38,7 +43,7 @@ export function PoliticianStats({ politician }: Props) {
   return (
     <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
       <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Trading Overview
+        {t("politicianDetail.tradingOverview")}
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -68,10 +73,10 @@ export function PoliticianStats({ politician }: Props) {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Performance vs S&P 500
+              {t("politicianDetail.performanceVsSP")}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Trailing 12 months
+              {t("politicianDetail.trailing12Months")}
             </p>
           </div>
           <div className="flex items-center gap-4 text-sm">

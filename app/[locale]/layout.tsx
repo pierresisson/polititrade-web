@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "../globals.css";
-import { locales } from "@/lib/i18n";
+import { locales, getDictionary, type Locale } from "@/lib/i18n";
+import { I18nProvider } from "@/lib/i18n-context";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -33,13 +34,14 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const dictionary = await getDictionary(locale as Locale);
 
   return (
     <html lang={locale}>
       <body
         className={`${fraunces.variable} ${inter.variable} font-body antialiased`}
       >
-        {children}
+        <I18nProvider dictionary={dictionary}>{children}</I18nProvider>
       </body>
     </html>
   );

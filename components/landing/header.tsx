@@ -1,17 +1,23 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 
 export function Header() {
+  const { t } = useTranslations();
+  const localePath = useLocalePath();
+
   return (
     <header className="border-b border-foreground/10">
       {/* Top bar - minimal */}
       <div className="border-b border-border">
         <div className="mx-auto flex h-10 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span>Congressional Trading Data</span>
+            <span>{t("header.tagline")}</span>
             <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">Updated live</span>
+            <span className="hidden sm:inline">{t("header.updatedLive")}</span>
           </div>
           <LanguageSwitcher />
         </div>
@@ -21,7 +27,7 @@ export function Header() {
       <div className="mx-auto max-w-6xl px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo - editorial style */}
-          <Link href="/" className="group">
+          <Link href={localePath("/")} className="group">
             <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
               Politi<span className="text-primary">Trades</span>
             </h1>
@@ -33,29 +39,29 @@ export function Header() {
               href="#feed"
               className="editorial-link text-sm"
             >
-              Live Feed
+              {t("header.liveFeed")}
             </Link>
             <Link
               href="#politicians"
               className="editorial-link text-sm"
             >
-              Politicians
+              {t("header.politicians")}
             </Link>
             <Link
               href="#pricing"
               className="editorial-link text-sm"
             >
-              Subscribe
+              {t("header.subscribe")}
             </Link>
           </nav>
 
           {/* CTA */}
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="hidden text-sm sm:flex">
-              Sign in
+              {t("common.login")}
             </Button>
             <Button size="sm" className="text-sm">
-              Subscribe
+              {t("common.subscribe")}
             </Button>
           </div>
         </div>

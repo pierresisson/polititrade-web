@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, ArrowUpDown, Grid3X3, List } from "lucide-react";
+import { Search, ArrowUpDown, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { politicians, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
@@ -10,9 +10,8 @@ import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { Party, Chamber } from "@/lib/mock-data";
 
 type SortKey = "name" | "trades" | "volume" | "returnYTD";
-type ViewMode = "grid" | "table";
 
-export function PoliticiansList() {
+export function AppPoliticiansList() {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [search, setSearch] = useState("");
@@ -20,12 +19,10 @@ export function PoliticiansList() {
   const [chamberFilter, setChamberFilter] = useState<Chamber | "all">("all");
   const [sortBy, setSortBy] = useState<SortKey>("trades");
   const [sortDesc, setSortDesc] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const filteredPoliticians = useMemo(() => {
     let result = [...politicians];
 
-    // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(
@@ -36,17 +33,14 @@ export function PoliticiansList() {
       );
     }
 
-    // Party filter
     if (partyFilter !== "all") {
       result = result.filter((p) => p.party === partyFilter);
     }
 
-    // Chamber filter
     if (chamberFilter !== "all") {
       result = result.filter((p) => p.chamber === chamberFilter);
     }
 
-    // Sort
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -79,10 +73,19 @@ export function PoliticiansList() {
   };
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
-      {/* Filters bar */}
-      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        {/* Search */}
+    <div className="p-6 lg:p-8">
+      {/* Page header */}
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
+          {t("app.politicians.title")}
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          {t("app.politicians.subtitle")}
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -94,10 +97,8 @@ export function PoliticiansList() {
           />
         </div>
 
-        {/* Filter buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Party filter */}
-          <div className="flex items-center gap-1 border border-border">
+          <div className="flex items-center gap-1 rounded-md border border-border">
             <button
               onClick={() => setPartyFilter("all")}
               className={`px-3 py-1.5 text-sm transition-colors ${
@@ -116,7 +117,7 @@ export function PoliticiansList() {
                   : "hover:bg-secondary"
               }`}
             >
-              {t("politicians.democrat")}
+              {t("politicians.dem")}
             </button>
             <button
               onClick={() => setPartyFilter("R")}
@@ -126,12 +127,11 @@ export function PoliticiansList() {
                   : "hover:bg-secondary"
               }`}
             >
-              {t("politicians.republican")}
+              {t("politicians.rep")}
             </button>
           </div>
 
-          {/* Chamber filter */}
-          <div className="flex items-center gap-1 border border-border">
+          <div className="flex items-center gap-1 rounded-md border border-border">
             <button
               onClick={() => setChamberFilter("all")}
               className={`px-3 py-1.5 text-sm transition-colors ${
@@ -163,106 +163,21 @@ export function PoliticiansList() {
               {t("politicians.senate")}
             </button>
           </div>
-
-          {/* View mode toggle */}
-          <div className="flex items-center gap-1 border border-border">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 transition-colors ${
-                viewMode === "grid"
-                  ? "bg-foreground text-background"
-                  : "hover:bg-secondary"
-              }`}
-              aria-label="Grid view"
-            >
-              <Grid3X3 className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`p-2 transition-colors ${
-                viewMode === "table"
-                  ? "bg-foreground text-background"
-                  : "hover:bg-secondary"
-              }`}
-              aria-label="Table view"
-            >
-              <List className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Results count */}
-      <p className="mb-6 text-sm text-muted-foreground">
+      <p className="mb-4 text-sm text-muted-foreground">
         {t("politicians.showing")} {filteredPoliticians.length} {t("politicians.of")} {politicians.length} {t("politicians.members")}
       </p>
 
-      {/* Grid View */}
-      {viewMode === "grid" && (
-        <div className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredPoliticians.map((p, index) => (
-            <Link
-              key={p.id}
-              href={localePath(`/politician/${p.id}`)}
-              className="group bg-card p-5 transition-colors hover:bg-secondary/50"
-            >
-              {/* Rank + Avatar */}
-              <div className="flex items-start justify-between">
-                <span className="font-display text-2xl font-semibold text-muted-foreground/20">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${getPartyBgColor(p.party)} ${getPartyColor(p.party)}`}
-                >
-                  {getInitials(p.name)}
-                </div>
-              </div>
-
-              {/* Name */}
-              <h3 className="mt-3 font-display text-lg font-semibold leading-tight group-hover:text-primary">
-                {p.name}
-              </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                <span className={getPartyColor(p.party)}>
-                  {p.party === "D" ? t("politicians.democrat") : t("politicians.republican")}
-                </span>
-                {" · "}
-                {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
-                {" · "}
-                {p.state}
-              </p>
-
-              {/* Stats */}
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("politicians.trades")}</p>
-                  <p className="font-display text-xl font-semibold">{p.trades}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("politicians.volume")}</p>
-                  <p className="font-display text-xl font-semibold">{p.volume}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("politicians.topHolding")}</p>
-                  <p className="font-mono font-semibold">{p.topHolding}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("politicians.returnYTD")}</p>
-                  <p className="font-display font-semibold text-success">{p.returnYTD}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Table View */}
-      {viewMode === "table" && (
+      {/* Table */}
+      <div className="rounded-lg border border-border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-foreground">
-                <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
+              <tr className="border-b border-border bg-secondary/30">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                   <button
                     onClick={() => handleSort("name")}
                     className="inline-flex items-center gap-1 hover:text-primary"
@@ -271,13 +186,13 @@ export function PoliticiansList() {
                     <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                   Party
                 </th>
-                <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
-                  {t("politicians.house")}/{t("politicians.senate")}
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                  Chamber
                 </th>
-                <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                   <button
                     onClick={() => handleSort("trades")}
                     className="inline-flex items-center gap-1 hover:text-primary"
@@ -286,7 +201,7 @@ export function PoliticiansList() {
                     <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                   <button
                     onClick={() => handleSort("volume")}
                     className="inline-flex items-center gap-1 hover:text-primary"
@@ -295,10 +210,10 @@ export function PoliticiansList() {
                     <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                   {t("politicians.topHolding")}
                 </th>
-                <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                   <button
                     onClick={() => handleSort("returnYTD")}
                     className="inline-flex items-center gap-1 hover:text-primary"
@@ -307,17 +222,20 @@ export function PoliticiansList() {
                     <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                  Watch
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border">
               {filteredPoliticians.map((p) => (
                 <tr
                   key={p.id}
-                  className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
+                  className="group transition-colors hover:bg-secondary/30"
                 >
-                  <td className="py-4">
+                  <td className="px-4 py-4">
                     <Link
-                      href={localePath(`/politician/${p.id}`)}
+                      href={localePath(`/app/politician/${p.id}`)}
                       className="flex items-center gap-3"
                     >
                       <div
@@ -331,7 +249,7 @@ export function PoliticiansList() {
                       </div>
                     </Link>
                   </td>
-                  <td className="py-4">
+                  <td className="px-4 py-4">
                     <span
                       className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${
                         p.party === "D"
@@ -342,25 +260,30 @@ export function PoliticiansList() {
                       {p.party === "D" ? t("politicians.dem") : t("politicians.rep")}
                     </span>
                   </td>
-                  <td className="py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-4 text-sm text-muted-foreground">
                     {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
                   </td>
-                  <td className="py-4 text-right font-display font-semibold">{p.trades}</td>
-                  <td className="py-4 text-right font-mono">{p.volume}</td>
-                  <td className="py-4 font-mono font-semibold">{p.topHolding}</td>
-                  <td className="py-4 text-right font-display font-semibold text-success">
+                  <td className="px-4 py-4 text-right font-display font-semibold">{p.trades}</td>
+                  <td className="px-4 py-4 text-right font-mono">{p.volume}</td>
+                  <td className="px-4 py-4 font-mono font-semibold">{p.topHolding}</td>
+                  <td className="px-4 py-4 text-right font-display font-semibold text-success">
                     {p.returnYTD}
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Star className="h-4 w-4" />
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
 
       {/* Empty state */}
       {filteredPoliticians.length === 0 && (
-        <div className="py-12 text-center">
+        <div className="rounded-lg border border-border bg-card p-8 text-center">
           <p className="text-lg text-muted-foreground">{t("politicians.noResults")}</p>
           <Button
             variant="outline"
@@ -375,6 +298,6 @@ export function PoliticiansList() {
           </Button>
         </div>
       )}
-    </section>
+    </div>
   );
 }

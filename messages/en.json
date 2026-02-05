@@ -2,144 +2,190 @@
   "common": {
     "home": "Home",
     "search": "Search",
-    "login": "Log in",
+    "login": "Sign in",
     "signup": "Sign Up",
+    "subscribe": "Subscribe",
     "getStarted": "Get Started",
     "viewAll": "View All",
-    "learnMore": "Learn More"
-  },
-  "header": {
-    "transactions": "Transactions",
-    "politicians": "Politicians",
-    "pricing": "Pricing",
-    "faq": "FAQ"
-  },
-  "hero": {
-    "badge": "Real-time congressional trading data",
-    "title": "Trade Like an",
-    "titleHighlight": "Insider",
-    "subtitle": "Track the stock trades of politicians and executives before the market reacts. Get real-time alerts and insights from official disclosure filings.",
-    "searchPlaceholder": "Search politician or stock...",
-    "trending": "Trending",
-    "stats": {
-      "trackedTrades": "Tracked trades",
-      "politicians": "Politicians",
-      "monitoring": "Monitoring"
-    }
-  },
-  "liveFeed": {
-    "title": "Live Transaction Feed",
-    "subtitle": "Real-time stock trades from members of Congress",
+    "learnMore": "Learn More",
+    "follow": "Follow",
     "filters": "Filters",
     "export": "Export",
-    "viewAll": "View all transactions",
-    "table": {
-      "politician": "Politician",
-      "stock": "Stock",
-      "action": "Action",
-      "amount": "Amount",
-      "tradeDate": "Trade Date",
-      "filed": "Filed"
-    }
+    "all": "All",
+    "showMore": "Show more",
+    "clearFilters": "Clear filters",
+    "back": "Back"
   },
-  "topPoliticians": {
-    "badge": "Most Active",
-    "title": "Top Politicians by Trading Volume",
-    "subtitle": "Track the most active traders in Congress. Performance based on disclosed trades over the past 12 months.",
-    "viewAll": "View all",
+  "header": {
+    "tagline": "Congressional Trading Data",
+    "updatedLive": "Updated live",
+    "liveFeed": "Live Feed",
+    "politicians": "Politicians",
+    "subscribe": "Subscribe"
+  },
+  "hero": {
+    "eyebrow": "Market Intelligence",
+    "title": "What Congress is",
+    "titleHighlight": "buying",
+    "titleEnd": "before the market knows",
+    "subtitle": "Track stock trades disclosed by members of Congress. Real-time alerts from official filings.",
+    "searchPlaceholder": "Search politicians, stocks...",
+    "trendingNow": "Trending Now",
+    "startTrial": "Start free trial",
+    "viewLiveFeed": "View live feed",
+    "tradesThisWeek": "trades this week"
+  },
+  "liveFeed": {
+    "eyebrow": "Live Feed",
+    "title": "Latest Disclosed Trades",
+    "viewAll": "View all transactions",
+    "member": "Member",
+    "stock": "Stock",
+    "type": "Type",
+    "amount": "Amount",
+    "filed": "Filed",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "d ago",
+    "buy": "Buy",
+    "sell": "Sell"
+  },
+  "politicians": {
+    "eyebrow": "Leaderboard",
+    "title": "Most Active Traders",
+    "subtitle": "Members of Congress ranked by trading activity. Performance based on disclosed trades over the trailing 12 months.",
+    "viewAllMembers": "View all members",
     "trades": "Trades",
     "volume": "Volume",
-    "performance": "Performance",
-    "topStock": "Top Stock"
+    "topHolding": "Top Holding",
+    "returnYTD": "Return YTD",
+    "pageTitle": "Politicians",
+    "pageEyebrow": "Congress Members",
+    "pageSubtitle": "Track trading activity from all 535 members of Congress. Filter by party, chamber, or sort by trading volume and performance.",
+    "showing": "Showing",
+    "of": "of",
+    "members": "members",
+    "noResults": "No politicians found matching your criteria.",
+    "democrat": "Democrat",
+    "republican": "Republican",
+    "dem": "Dem",
+    "rep": "Rep",
+    "house": "House",
+    "senate": "Senate",
+    "allPoliticians": "All Politicians"
+  },
+  "politicianDetail": {
+    "memberOf": "Member of the U.S.",
+    "officialPage": "Official Page",
+    "tradingOverview": "Trading Overview",
+    "totalTrades": "Total Trades",
+    "tradingVolume": "Trading Volume",
+    "last12Months": "Last 12 months",
+    "disclosedAmount": "Disclosed amount",
+    "basedOnTrades": "Based on disclosed trades",
+    "mostTradedStock": "Most traded stock",
+    "performanceVsSP": "Performance vs S&P 500",
+    "trailing12Months": "Trailing 12 months",
+    "recentTransactions": "Recent Transactions",
+    "tradesInLast12Months": "trades in the last 12 months",
+    "buys": "Buys",
+    "sells": "Sells",
+    "tradeDate": "Trade Date",
+    "noTransactions": "No recent transactions disclosed for this member.",
+    "noFilteredTransactions": "No {type} transactions found.",
+    "showAllTransactions": "Show all transactions",
+    "dataSource": "Data sourced from official congressional financial disclosure filings. Amounts shown are reported ranges, not exact figures."
   },
   "valueProps": {
-    "title": "Everything You Need to Track Insider Trades",
-    "subtitle": "PolitiTrades gives you the tools to monitor congressional stock trades, analyze performance, and stay ahead of the market.",
+    "eyebrow": "Why PolitiTrades",
+    "title": "The edge you've been missing",
+    "subtitle": "Congress members consistently outperform the market. Now you can see exactly what they're trading—and when.",
+    "quote": "Members of Congress have access to non-public information that could affect stock prices. Their trades are a signal—we help you see it.",
     "features": {
-      "alerts": {
-        "title": "Real-Time Alerts",
-        "description": "Get instant notifications when politicians file new trades. Never miss a market-moving disclosure."
+      "realtime": {
+        "title": "Real-time tracking",
+        "description": "Trades appear within minutes of official filing. Set alerts for specific politicians or stocks."
+      },
+      "official": {
+        "title": "Official sources only",
+        "description": "Data pulled directly from House, Senate, and SEC disclosure filings. Verified and accurate."
       },
       "analytics": {
-        "title": "Performance Analytics",
-        "description": "Track politician trading performance over time. Compare returns against market benchmarks."
-      },
-      "filings": {
-        "title": "Official Filings",
-        "description": "Data sourced directly from official SEC and House/Senate disclosure filings. 100% accurate."
+        "title": "Performance analytics",
+        "description": "Track returns over time. Compare politician portfolios against market benchmarks."
       },
       "follow": {
-        "title": "Follow Politicians",
-        "description": "Build watchlists of politicians and get notified when they make trades. Track their portfolios."
+        "title": "Follow politicians",
+        "description": "Build watchlists. Get notified when your tracked members disclose new trades."
       },
-      "notifications": {
-        "title": "Custom Notifications",
-        "description": "Set up alerts for specific stocks, sectors, or trading patterns. Customize your preferences."
+      "alerts": {
+        "title": "Custom alerts",
+        "description": "Email, SMS, or push notifications. Filter by stock, sector, trade size, or party."
       },
       "history": {
-        "title": "Historical Data",
-        "description": "Access years of historical trading data. Analyze patterns and make informed decisions."
+        "title": "Historical data",
+        "description": "Full archive back to 2012. Analyze patterns and trends over time."
       }
     }
   },
   "pricing": {
-    "title": "Simple, Transparent Pricing",
-    "subtitle": "Start for free and upgrade when you need more. No hidden fees.",
-    "popular": "Most Popular",
-    "annualDiscount": "Save 20% with annual billing. Cancel anytime.",
+    "eyebrow": "Pricing",
+    "title": "Simple, transparent pricing",
+    "subtitle": "Start free. Upgrade when you need real-time alerts and full data access.",
+    "mostPopular": "Most popular",
+    "trialNote": "14-day free trial on Pro. No credit card required. Cancel anytime.",
     "plans": {
-      "guest": {
-        "name": "Guest",
-        "price": "Free",
-        "description": "Browse public data without an account",
-        "features": [
-          "View recent transactions",
-          "Basic politician profiles",
-          "Limited historical data (30 days)",
-          "Community access"
-        ],
-        "cta": "Browse Now"
-      },
       "free": {
         "name": "Free",
         "price": "$0",
-        "period": "/month",
-        "description": "Create an account to unlock more features",
+        "description": "Browse and explore",
+        "cta": "Get started",
         "features": [
-          "Everything in Guest",
-          "Follow up to 5 politicians",
-          "Daily email digest",
-          "Extended history (90 days)",
-          "Basic search & filters"
-        ],
-        "cta": "Create Account"
+          "View recent transactions",
+          "Basic politician profiles",
+          "30-day historical data",
+          "Weekly email digest"
+        ]
       },
-      "premium": {
-        "name": "Premium",
+      "pro": {
+        "name": "Pro",
         "price": "$19",
-        "period": "/month",
-        "description": "Full access to all features and data",
+        "period": "/mo",
+        "description": "For active investors",
+        "cta": "Start free trial",
         "features": [
           "Everything in Free",
+          "Real-time alerts (email + push)",
           "Unlimited politician tracking",
-          "Real-time push notifications",
-          "Full historical data",
-          "Advanced analytics",
-          "Performance comparisons",
-          "API access",
-          "Priority support"
-        ],
-        "cta": "Start Free Trial"
+          "Full historical archive",
+          "Performance analytics",
+          "API access"
+        ]
+      },
+      "team": {
+        "name": "Team",
+        "price": "$99",
+        "period": "/mo",
+        "description": "For firms and researchers",
+        "cta": "Contact sales",
+        "features": [
+          "Everything in Pro",
+          "5 team seats included",
+          "Bulk data export",
+          "Priority support",
+          "Custom integrations"
+        ]
       }
     }
   },
   "trust": {
-    "title": "Data You Can Trust",
-    "subtitle": "All trading data is sourced directly from official government disclosure filings.",
+    "eyebrow": "Data Sources",
+    "title": "Official filings. Verified data.",
+    "subtitle": "Every transaction is pulled directly from government disclosure systems and cross-referenced against original documents.",
     "sources": {
       "house": {
-        "title": "U.S. House of Representatives",
-        "description": "Official Financial Disclosure Reports from the Clerk of the House"
+        "title": "House of Representatives",
+        "description": "Financial Disclosure Reports filed with the Clerk of the House"
       },
       "senate": {
         "title": "U.S. Senate",
@@ -147,76 +193,60 @@
       },
       "sec": {
         "title": "SEC EDGAR",
-        "description": "Securities and Exchange Commission electronic filing system"
+        "description": "Form 4 filings for executive insider transactions"
       },
       "stock": {
-        "title": "STOCK Act Compliance",
-        "description": "Data from Stop Trading on Congressional Knowledge Act filings"
+        "title": "STOCK Act",
+        "description": "Compliance data mandated by federal law since 2012"
       }
     },
     "stats": {
       "accuracy": "Data accuracy",
-      "frequency": "Update frequency",
-      "years": "Years of data",
-      "members": "Members tracked"
-    },
-    "updateNote": "Data is updated within 15 minutes of official filing publication."
-  },
-  "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Everything you need to know about PolitiTrades and congressional trading data.",
-    "questions": {
-      "source": {
-        "question": "Where does PolitiTrades get its data?",
-        "answer": "All data is sourced directly from official government disclosure filings, including the U.S. House of Representatives Financial Disclosure Reports, U.S. Senate Periodic Transaction Reports, and SEC EDGAR filings."
-      },
-      "speed": {
-        "question": "How quickly are new trades added?",
-        "answer": "We monitor official filing systems continuously and add new trades within 15 minutes of publication."
-      },
-      "legal": {
-        "question": "Is it legal for politicians to trade stocks?",
-        "answer": "Yes, members of Congress are allowed to trade stocks, but they must disclose their trades within 45 days under the STOCK Act."
-      },
-      "investment": {
-        "question": "Can I use this data to make investment decisions?",
-        "answer": "PolitiTrades provides information for educational and research purposes. This is not investment advice."
-      },
-      "premium": {
-        "question": "What's included in the Premium plan?",
-        "answer": "Premium includes unlimited politician tracking, real-time push notifications, full historical data, advanced analytics, and API access."
-      },
-      "cancel": {
-        "question": "Can I cancel my subscription anytime?",
-        "answer": "Yes, you can cancel your Premium subscription at any time. Your access will continue until the end of your current billing period."
-      },
-      "api": {
-        "question": "Do you offer an API?",
-        "answer": "Yes, Premium subscribers get access to our REST API, which provides programmatic access to all trading data."
-      }
+      "filingToAlert": "Filing to alert",
+      "historicalData": "Historical data",
+      "membersTracked": "Members tracked"
     }
   },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Questions & answers",
+    "questions": [
+      {
+        "q": "Where does PolitiTrades get its data?",
+        "a": "All data is sourced directly from official government disclosure filings—the House Financial Disclosure Reports, Senate Periodic Transaction Reports, and SEC EDGAR filings. We verify every transaction against the original documents."
+      },
+      {
+        "q": "How quickly do new trades appear?",
+        "a": "We monitor official filing systems continuously. New trades typically appear within 15 minutes of publication. Pro subscribers receive real-time push notifications."
+      },
+      {
+        "q": "Is it legal for Congress members to trade stocks?",
+        "a": "Yes. Members of Congress can legally trade stocks, but must disclose trades within 45 days under the STOCK Act (Stop Trading on Congressional Knowledge Act) of 2012. There's ongoing debate about whether this should change."
+      },
+      {
+        "q": "Should I use this data to make investment decisions?",
+        "a": "PolitiTrades provides information for research and educational purposes. Congressional trading data is one signal among many. Past performance doesn't guarantee future results. Always do your own research and consider consulting a financial advisor."
+      },
+      {
+        "q": "What's included in Pro?",
+        "a": "Pro includes real-time alerts via email and push, unlimited politician tracking, full historical data back to 2012, performance analytics comparing returns to benchmarks, and API access for building your own tools."
+      },
+      {
+        "q": "Can I cancel anytime?",
+        "a": "Yes. You can cancel your subscription at any time from your account settings. You'll retain access through the end of your current billing period."
+      }
+    ]
+  },
   "footer": {
-    "tagline": "Track insider trades from politicians and executives. Make informed investment decisions.",
+    "tagline": "Track congressional stock trades. See what politicians are buying and selling before the market reacts.",
     "product": "Product",
-    "resources": "Resources",
     "company": "Company",
-    "links": {
-      "features": "Features",
-      "pricing": "Pricing",
-      "api": "API",
-      "changelog": "Changelog",
-      "documentation": "Documentation",
-      "blog": "Blog",
-      "support": "Support",
-      "status": "Status",
-      "about": "About",
-      "contact": "Contact",
-      "privacy": "Privacy",
-      "terms": "Terms"
-    },
-    "disclaimer": "PolitiTrades provides information for educational and research purposes only. This is not investment advice. Trading stocks involves risk, and past performance does not guarantee future results.",
-    "copyright": "PolitiTrades. All rights reserved.",
-    "dataSource": "Data sourced from official U.S. government disclosure filings."
+    "api": "API",
+    "about": "About",
+    "blog": "Blog",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "disclaimer": "PolitiTrades provides information for educational and research purposes only. This is not investment advice. Stock trading involves risk; past performance does not guarantee future results. Data sourced from official U.S. government disclosure filings.",
+    "copyright": "PolitiTrades. All rights reserved."
   }
 }

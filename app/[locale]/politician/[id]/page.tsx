@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/landing/header";
 import { Footer } from "@/components/landing/footer";
+import { PoliticianBackLink } from "@/components/politicians/politician-back-link";
 import { PoliticianProfile } from "@/components/politicians/politician-profile";
 import { PoliticianTransactions } from "@/components/politicians/politician-transactions";
 import { PoliticianStats } from "@/components/politicians/politician-stats";
@@ -47,13 +46,7 @@ export default async function PoliticianPage({ params }: Props) {
       <main>
         {/* Back link */}
         <div className="mx-auto max-w-6xl px-6 pt-8">
-          <Link
-            href="/politicians"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            All Politicians
-          </Link>
+          <PoliticianBackLink />
         </div>
 
         {/* Profile header */}

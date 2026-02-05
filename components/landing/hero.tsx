@@ -1,10 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { politicians, trendingStocks, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
 import { HeroIllustration } from "./hero-illustration";
+import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 
 export function Hero() {
+  const { t } = useTranslations();
+  const localePath = useLocalePath();
   const featuredPoliticians = politicians.slice(0, 4);
 
   return (
@@ -14,21 +19,20 @@ export function Hero() {
         <div className="flex flex-col justify-center">
           {/* Eyebrow */}
           <p className="mb-4 text-sm font-medium uppercase tracking-widest text-primary">
-            Market Intelligence
+            {t("hero.eyebrow")}
           </p>
 
           {/* Main headline */}
           <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl lg:text-[3.5rem]">
-            What Congress is{" "}
-            <em className="not-italic text-primary">buying</em>
+            {t("hero.title")}{" "}
+            <em className="not-italic text-primary">{t("hero.titleHighlight")}</em>
             <br />
-            before the market knows
+            {t("hero.titleEnd")}
           </h1>
 
           {/* Subhead */}
           <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
-            Track stock trades disclosed by members of Congress.
-            Real-time alerts from official filings.
+            {t("hero.subtitle")}
           </p>
 
           {/* Search bar */}
@@ -37,7 +41,7 @@ export function Hero() {
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search politicians, stocks..."
+                placeholder={t("hero.searchPlaceholder")}
                 className="h-12 border-2 border-border bg-card pl-12 pr-4 text-base placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
@@ -46,13 +50,13 @@ export function Hero() {
           {/* Trending Politicians */}
           <div className="mt-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Trending Now
+              {t("hero.trendingNow")}
             </p>
             <div className="flex flex-wrap gap-2">
               {featuredPoliticians.map((politician) => (
                 <Link
                   key={politician.id}
-                  href={`/politician/${politician.id}`}
+                  href={localePath(`/politician/${politician.id}`)}
                   className="group flex items-center gap-2 border border-border bg-card px-3 py-2 transition-all hover:border-primary hover:bg-secondary/50"
                 >
                   <div
@@ -79,14 +83,14 @@ export function Hero() {
               href="#pricing"
               className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
-              Start free trial
+              {t("hero.startTrial")}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="#feed"
               className="editorial-link inline-flex items-center gap-2 px-2 text-sm font-medium"
             >
-              View live feed
+              {t("hero.viewLiveFeed")}
             </Link>
           </div>
         </div>
@@ -104,12 +108,12 @@ export function Hero() {
           {trendingStocks.slice(0, 4).map((stock) => (
             <Link
               key={stock.symbol}
-              href={`/stock/${stock.symbol}`}
+              href={localePath(`/stock/${stock.symbol}`)}
               className="group flex items-center justify-between"
             >
               <div>
                 <span className="font-mono text-lg font-bold group-hover:text-primary">{stock.symbol}</span>
-                <p className="text-xs text-muted-foreground">{stock.transactions} trades this week</p>
+                <p className="text-xs text-muted-foreground">{stock.transactions} {t("hero.tradesThisWeek")}</p>
               </div>
               <span
                 className={`font-mono text-sm font-medium ${
