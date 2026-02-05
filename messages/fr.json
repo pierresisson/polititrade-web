@@ -1,0 +1,12 @@
+{
+  "common": {
+    "home": "Accueil",
+    "search": "Rechercher",
+    "login": "Connexion",
+    "signup": "S'inscrire"
+  },
+  "hero": {
+    "title": "Tradez comme un initié",
+    "subtitle": "Suivez les forces qui font bouger les marchés"
+  }
+}
