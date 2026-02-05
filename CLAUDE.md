@@ -52,3 +52,27 @@ bunx shadcn@latest add <component-name>
 **RSC by default**: Components are Server Components unless marked with `"use client"` directive.
 
 **Fonts**: Geist Sans and Geist Mono via Next.js font optimization (CSS variables `--font-geist-sans`, `--font-geist-mono`).
+
+## Skills Reference
+
+Agent skills in `.agents/skills/` - consult when working on related tasks.
+
+| Skill | Use For | Path |
+|-------|---------|------|
+| **next-best-practices** | RSC boundaries, async patterns, hydration errors, metadata, image/font optimization, route handlers | `.agents/skills/next-best-practices/` |
+| **vercel-react-best-practices** | 57 rules: waterfalls, bundle size, server perf, rerenders, JS optimization | `.agents/skills/vercel-react-best-practices/` |
+| **ui-ux-pro-max** | Design systems, color palettes, typography, styles (glassmorphism, etc.), accessibility | `.agents/skills/ui-ux-pro-max/` |
+| **find-skills** | Discover and install new skills via `npx skills find <query>` | `.agents/skills/find-skills/` |
+
+### Quick Commands
+
+```bash
+# UI/UX design system generation
+python3 .agents/skills/ui-ux-pro-max/scripts/search.py "fintech dashboard" --design-system
+
+# Search specific domain (style, color, typography, ux, chart)
+python3 .agents/skills/ui-ux-pro-max/scripts/search.py "glassmorphism" --domain style
+
+# Find new skills
+npx skills find <query>
+```
