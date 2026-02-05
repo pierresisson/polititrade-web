@@ -1,25 +1,5 @@
 import Link from "next/link";
-
-type Politician = {
-  rank: number;
-  name: string;
-  party: "D" | "R";
-  chamber: "House" | "Senate";
-  state: string;
-  trades: number;
-  volume: string;
-  topHolding: string;
-  returnYTD: string;
-};
-
-const politicians: Politician[] = [
-  { rank: 1, name: "Nancy Pelosi", party: "D", chamber: "House", state: "CA", trades: 43, volume: "$12.4M", topHolding: "NVDA", returnYTD: "+67%" },
-  { rank: 2, name: "Tommy Tuberville", party: "R", chamber: "Senate", state: "AL", trades: 156, volume: "$8.7M", topHolding: "AAPL", returnYTD: "+45%" },
-  { rank: 3, name: "Dan Crenshaw", party: "R", chamber: "House", state: "TX", trades: 28, volume: "$3.2M", topHolding: "MSFT", returnYTD: "+34%" },
-  { rank: 4, name: "Mark Warner", party: "D", chamber: "Senate", state: "VA", trades: 12, volume: "$5.1M", topHolding: "GOOGL", returnYTD: "+28%" },
-  { rank: 5, name: "Josh Gottheimer", party: "D", chamber: "House", state: "NJ", trades: 89, volume: "$2.8M", topHolding: "META", returnYTD: "+52%" },
-  { rank: 6, name: "Michael McCaul", party: "R", chamber: "House", state: "TX", trades: 34, volume: "$6.3M", topHolding: "TSLA", returnYTD: "+41%" },
-];
+import { politicians, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
 
 export function TopPoliticians() {
   return (
@@ -46,61 +26,48 @@ export function TopPoliticians() {
           </Link>
         </div>
 
-        {/* Grid - editorial cards */}
-        <div className="grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-          {politicians.map((p) => (
+        {/* Grid */}
+        <div className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {politicians.map((p, index) => (
             <article
-              key={p.rank}
-              className="group cursor-pointer bg-card p-6 transition-colors hover:bg-secondary/50"
+              key={p.id}
+              className="group cursor-pointer bg-card p-5 transition-colors hover:bg-secondary/50"
             >
-              {/* Rank + Name */}
+              {/* Rank + Avatar */}
               <div className="flex items-start justify-between">
-                <div>
-                  <span className="font-display text-4xl font-semibold text-muted-foreground/30">
-                    {String(p.rank).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-1 font-display text-xl font-semibold group-hover:text-primary">
-                    {p.name}
-                  </h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
-                    <span className={p.party === "D" ? "text-blue-600" : "text-red-600"}>
-                      {p.party}
-                    </span>
-                    {" · "}
-                    {p.chamber}
-                    {" · "}
-                    {p.state}
-                  </p>
+                <span className="font-display text-3xl font-semibold text-muted-foreground/20">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${getPartyBgColor(p.party)} ${getPartyColor(p.party)}`}
+                >
+                  {getInitials(p.name)}
                 </div>
               </div>
 
+              {/* Name */}
+              <h3 className="mt-3 font-display text-lg font-semibold leading-tight group-hover:text-primary">
+                {p.name}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                <span className={getPartyColor(p.party)}>
+                  {p.party === "D" ? "Dem" : "Rep"}
+                </span>
+                {" · "}
+                {p.chamber}
+                {" · "}
+                {p.state}
+              </p>
+
               {/* Stats */}
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Trades
-                  </p>
-                  <p className="mt-1 font-display text-2xl font-semibold">{p.trades}</p>
+                  <p className="text-xs text-muted-foreground">Trades</p>
+                  <p className="font-display text-xl font-semibold">{p.trades}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Volume
-                  </p>
-                  <p className="mt-1 font-display text-2xl font-semibold">{p.volume}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Top Holding
-                  </p>
-                  <p className="mt-1 font-mono text-lg font-semibold">{p.topHolding}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Return YTD
-                  </p>
-                  <p className="mt-1 font-display text-lg font-semibold text-success">
-                    {p.returnYTD}
-                  </p>
+                  <p className="text-xs text-muted-foreground">Volume</p>
+                  <p className="font-display text-xl font-semibold">{p.volume}</p>
                 </div>
               </div>
             </article>

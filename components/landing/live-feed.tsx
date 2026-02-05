@@ -3,30 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-
-type Transaction = {
-  id: number;
-  politician: string;
-  party: "D" | "R";
-  state: string;
-  stock: string;
-  company: string;
-  type: "buy" | "sell";
-  amount: string;
-  date: string;
-  daysAgo: number;
-};
-
-const transactions: Transaction[] = [
-  { id: 1, politician: "Nancy Pelosi", party: "D", state: "CA", stock: "NVDA", company: "NVIDIA Corporation", type: "buy", amount: "$1M – $5M", date: "Jan 15", daysAgo: 2 },
-  { id: 2, politician: "Tommy Tuberville", party: "R", state: "AL", stock: "AAPL", company: "Apple Inc.", type: "sell", amount: "$250K – $500K", date: "Jan 14", daysAgo: 3 },
-  { id: 3, politician: "Dan Crenshaw", party: "R", state: "TX", stock: "MSFT", company: "Microsoft Corp.", type: "buy", amount: "$100K – $250K", date: "Jan 14", daysAgo: 3 },
-  { id: 4, politician: "Mark Warner", party: "D", state: "VA", stock: "GOOGL", company: "Alphabet Inc.", type: "buy", amount: "$500K – $1M", date: "Jan 13", daysAgo: 4 },
-  { id: 5, politician: "Josh Gottheimer", party: "D", state: "NJ", stock: "AMZN", company: "Amazon.com Inc.", type: "buy", amount: "$50K – $100K", date: "Jan 12", daysAgo: 5 },
-  { id: 6, politician: "Michael McCaul", party: "R", state: "TX", stock: "TSLA", company: "Tesla Inc.", type: "sell", amount: "$100K – $250K", date: "Jan 11", daysAgo: 6 },
-  { id: 7, politician: "Ro Khanna", party: "D", state: "CA", stock: "META", company: "Meta Platforms", type: "buy", amount: "$15K – $50K", date: "Jan 10", daysAgo: 7 },
-  { id: 8, politician: "Pat Fallon", party: "R", state: "TX", stock: "AMD", company: "Advanced Micro Devices", type: "buy", amount: "$1K – $15K", date: "Jan 9", daysAgo: 8 },
-];
+import { transactions, getPartyColor } from "@/lib/mock-data";
 
 export function LiveFeed() {
   const [showAll, setShowAll] = useState(false);
@@ -34,7 +11,7 @@ export function LiveFeed() {
 
   return (
     <section id="feed" className="mx-auto max-w-6xl px-6 py-16 lg:py-24">
-      {/* Section header - editorial */}
+      {/* Section header */}
       <div className="mb-8 flex items-end justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-widest text-primary">
@@ -52,7 +29,7 @@ export function LiveFeed() {
         </Link>
       </div>
 
-      {/* Table - clean editorial style */}
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -85,11 +62,7 @@ export function LiveFeed() {
                     <span className="font-medium group-hover:text-primary">
                       {tx.politician}
                     </span>
-                    <span
-                      className={`text-xs font-medium ${
-                        tx.party === "D" ? "text-blue-600" : "text-red-600"
-                      }`}
-                    >
+                    <span className={`text-xs font-medium ${getPartyColor(tx.party)}`}>
                       {tx.party}-{tx.state}
                     </span>
                   </div>
@@ -129,7 +102,7 @@ export function LiveFeed() {
       </div>
 
       {/* Load more */}
-      {!showAll && (
+      {!showAll && transactions.length > 5 && (
         <button
           onClick={() => setShowAll(true)}
           className="mt-6 text-sm font-medium text-primary hover:underline"
