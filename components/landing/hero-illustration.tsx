@@ -4,6 +4,12 @@
 // Style éditorial avec données visuelles + animations subtiles
 
 import { m, useReducedMotion } from "framer-motion";
+import { AreaChart, Area } from "recharts";
+import {
+  ChartContainer,
+  useChart,
+  type ChartConfig,
+} from "@/components/ui/chart";
 
 // Animation timing (starts after the parent fade-left animation)
 const BASE_DELAY = 0.4;
@@ -69,29 +75,49 @@ const slideInLeftReduced = {
   },
 };
 
-// Chart line draw animation
-const chartLineVariants = {
-  hidden: {
-    pathLength: 0,
-    opacity: 0,
-  },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      pathLength: { duration: 1.2, ease: "easeOut" as const, delay: BASE_DELAY + 0.2 },
-      opacity: { duration: 0.2, delay: BASE_DELAY + 0.2 },
-    },
-  },
+// Sparkline mock data
+const sparklineData = [
+  { v: 45 },
+  { v: 42 },
+  { v: 38 },
+  { v: 40 },
+  { v: 25 },
+  { v: 28 },
+  { v: 15 },
+  { v: 18 },
+  { v: 10 },
+  { v: 12 },
+  { v: 8 },
+];
+
+const sparklineConfig: ChartConfig = {
+  v: { label: "Performance", color: "var(--chart-1)" },
 };
 
-const chartFillVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 0.1,
-    transition: { duration: 0.5, delay: BASE_DELAY + 1.0 },
-  },
-};
+function HeroSparkline() {
+  const { reducedMotion } = useChart();
+
+  return (
+    <AreaChart data={sparklineData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+      <defs>
+        <linearGradient id="heroSparklineGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--color-v)" stopOpacity={0.15} />
+          <stop offset="100%" stopColor="var(--color-v)" stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <Area
+        type="monotone"
+        dataKey="v"
+        stroke="var(--color-v)"
+        strokeWidth={2}
+        fill="url(#heroSparklineGradient)"
+        isAnimationActive={!reducedMotion}
+        animationDuration={800}
+        animationEasing="ease-out"
+      />
+    </AreaChart>
+  );
+}
 
 export function HeroIllustration() {
   const prefersReducedMotion = useReducedMotion();
@@ -128,33 +154,10 @@ export function HeroIllustration() {
                 <div className="h-2 w-16 rounded bg-muted" />
                 <div className="h-2 w-8 rounded bg-primary/30" />
               </div>
-              {/* Simple line chart with draw animation */}
-              <svg viewBox="0 0 200 60" className="h-16 w-full">
-                <m.polyline
-                  points="0,45 20,42 40,38 60,40 80,25 100,28 120,15 140,18 160,10 180,12 200,8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-primary"
-                  variants={prefersReducedMotion ? undefined : chartLineVariants}
-                  initial={prefersReducedMotion ? undefined : "hidden"}
-                  animate={prefersReducedMotion ? undefined : "visible"}
-                />
-                <m.polyline
-                  points="0,45 20,42 40,38 60,40 80,25 100,28 120,15 140,18 160,10 180,12 200,8 200,60 0,60"
-                  fill="url(#gradient)"
-                  stroke="none"
-                  variants={prefersReducedMotion ? undefined : chartFillVariants}
-                  initial={prefersReducedMotion ? { opacity: 0.1 } : "hidden"}
-                  animate={prefersReducedMotion ? undefined : "visible"}
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="currentColor" className="text-primary" />
-                    <stop offset="100%" stopColor="transparent" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              {/* Recharts sparkline */}
+              <ChartContainer config={sparklineConfig} className="h-16 w-full">
+                <HeroSparkline />
+              </ChartContainer>
             </m.div>
 
             {/* Transaction rows */}

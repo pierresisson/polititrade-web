@@ -28,6 +28,8 @@ export const colors = {
     3: "#06B6D4",
     4: "#F59E0B",
     5: "#10B981",
+    grid: "#E5E5E5",
+    text: "#666666",
   },
   status: {
     success: "#10B981",

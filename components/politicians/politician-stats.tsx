@@ -1,12 +1,112 @@
 "use client";
 
 import { TrendingUp, DollarSign, BarChart3, Briefcase } from "lucide-react";
+import {
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Area,
+  AreaChart,
+} from "recharts";
 import { useTranslations } from "@/lib/i18n-context";
+import {
+  ChartContainer,
+  ChartTooltipContent,
+  ChartLegendContent,
+  useChart,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import type { Politician } from "@/lib/mock-data";
 
 type Props = {
   politician: Politician;
 };
+
+// Mock performance data (12 months)
+const performanceData = [
+  { month: "Jan", politician: 0, sp500: 0 },
+  { month: "Feb", politician: 8, sp500: 4 },
+  { month: "Mar", politician: 18, sp500: 8 },
+  { month: "Apr", politician: 28, sp500: 12 },
+  { month: "May", politician: 35, sp500: 16 },
+  { month: "Jun", politician: 40, sp500: 18 },
+  { month: "Jul", politician: 48, sp500: 22 },
+  { month: "Aug", politician: 55, sp500: 26 },
+  { month: "Sep", politician: 50, sp500: 24 },
+  { month: "Oct", politician: 58, sp500: 28 },
+  { month: "Nov", politician: 62, sp500: 30 },
+  { month: "Dec", politician: 67, sp500: 32 },
+];
+
+const chartConfig: ChartConfig = {
+  politician: { label: "Politician", color: "var(--chart-1)" },
+  sp500: { label: "S&P 500", color: "var(--chart-text)" },
+};
+
+function PerformanceChart() {
+  const { reducedMotion } = useChart();
+
+  return (
+    <AreaChart
+      data={performanceData}
+      margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
+    >
+      <defs>
+        <linearGradient id="politicianFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--color-politician)" stopOpacity={0.08} />
+          <stop offset="100%" stopColor="var(--color-politician)" stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid
+        strokeDasharray="4 4"
+        stroke="var(--chart-grid)"
+        vertical={false}
+      />
+      <XAxis
+        dataKey="month"
+        axisLine={false}
+        tickLine={false}
+        tickMargin={8}
+        tick={{ fontSize: 12 }}
+      />
+      <YAxis
+        axisLine={false}
+        tickLine={false}
+        tickMargin={4}
+        tick={{ fontSize: 12 }}
+        tickFormatter={(v: number) => `${v > 0 ? "+" : ""}${v}%`}
+      />
+      <Tooltip
+        content={
+          <ChartTooltipContent
+            valueFormatter={(v) => `+${v}%`}
+          />
+        }
+      />
+      <Area
+        type="monotone"
+        dataKey="politician"
+        stroke="var(--color-politician)"
+        strokeWidth={2.5}
+        fill="url(#politicianFill)"
+        isAnimationActive={!reducedMotion}
+        animationDuration={600}
+      />
+      <Line
+        type="monotone"
+        dataKey="sp500"
+        stroke="var(--color-sp500)"
+        strokeWidth={2}
+        strokeOpacity={0.4}
+        dot={false}
+        isAnimationActive={!reducedMotion}
+        animationDuration={600}
+      />
+    </AreaChart>
+  );
+}
 
 export function PoliticianStats({ politician }: Props) {
   const { t } = useTranslations();
@@ -68,7 +168,7 @@ export function PoliticianStats({ politician }: Props) {
         ))}
       </div>
 
-      {/* Performance chart placeholder */}
+      {/* Performance chart */}
       <div className="mt-8 border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -79,71 +179,18 @@ export function PoliticianStats({ politician }: Props) {
               {t("politicianDetail.trailing12Months")}
             </p>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              {politician.name}
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-muted-foreground" />
-              S&P 500
-            </span>
-          </div>
+          <ChartLegendContent
+            config={chartConfig}
+            payload={[
+              { value: "politician", color: "var(--chart-1)", dataKey: "politician" },
+              { value: "sp500", color: "var(--chart-text)", dataKey: "sp500" },
+            ]}
+          />
         </div>
 
-        {/* Simple chart visualization */}
-        <div className="relative h-48">
-          <svg viewBox="0 0 400 150" className="h-full w-full">
-            {/* Grid lines */}
-            <line x1="0" y1="37.5" x2="400" y2="37.5" stroke="currentColor" strokeOpacity="0.1" />
-            <line x1="0" y1="75" x2="400" y2="75" stroke="currentColor" strokeOpacity="0.1" />
-            <line x1="0" y1="112.5" x2="400" y2="112.5" stroke="currentColor" strokeOpacity="0.1" />
-
-            {/* S&P 500 line (benchmark) */}
-            <polyline
-              points="0,100 50,95 100,90 150,85 200,80 250,78 300,72 350,68 400,65"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeOpacity="0.3"
-              className="text-muted-foreground"
-            />
-
-            {/* Politician performance line */}
-            <polyline
-              points="0,110 50,100 100,85 150,70 200,60 250,55 300,40 350,35 400,25"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className="text-primary"
-            />
-
-            {/* Area under politician line */}
-            <polygon
-              points="0,110 50,100 100,85 150,70 200,60 250,55 300,40 350,35 400,25 400,150 0,150"
-              fill="currentColor"
-              fillOpacity="0.05"
-              className="text-primary"
-            />
-          </svg>
-
-          {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 flex h-full flex-col justify-between text-xs text-muted-foreground">
-            <span>+80%</span>
-            <span>+40%</span>
-            <span>0%</span>
-            <span>-20%</span>
-          </div>
-        </div>
-
-        {/* X-axis labels */}
-        <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-          <span>Jan</span>
-          <span>Apr</span>
-          <span>Jul</span>
-          <span>Oct</span>
-          <span>Dec</span>
-        </div>
+        <ChartContainer config={chartConfig} className="h-48 w-full">
+          <PerformanceChart />
+        </ChartContainer>
       </div>
     </section>
   );

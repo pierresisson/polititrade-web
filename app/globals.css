@@ -22,6 +22,8 @@
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-text: var(--chart-text);
   --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -93,6 +95,8 @@
   --chart-3: #0D9488;
   --chart-4: #F59E0B;
   --chart-5: #10B981;
+  --chart-grid: #E5E5E5;
+  --chart-text: #666666;
 
   /* Accent colors */
   --indigo: #4F46E5;
@@ -138,6 +142,8 @@
   --chart-3: #14B8A6;
   --chart-4: #F59E0B;
   --chart-5: #10B981;
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-text: #999999;
   --indigo: #818CF8;
   --indigo-light: #3D3D3D;
   --success: #14B8A6;

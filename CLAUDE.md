@@ -39,6 +39,7 @@ supabase gen types typescript --local > lib/database.types.ts  # Generate types
 - **Tailwind CSS v4** with CSS variables for theming
 - **shadcn/ui** (radix-nova style) - components in `components/ui/`
 - **Supabase** - Backend (PostgreSQL + Auth)
+- **Recharts** - All charts/graphs via `components/ui/chart.tsx` wrapper
 - **Lucide React** - Icon library
 
 ### Project Structure
@@ -100,6 +101,9 @@ Centralized design tokens in `lib/theme.ts`. All colors defined in `app/globals.
 2. **shadcn/ui only** - All components from `components/ui/`
 3. **Consistent spacing** - Use Tailwind spacing scale
 4. **Semantic colors** - `text-foreground`, `bg-card`, `border-border`, etc.
+5. **All charts use Recharts** via `components/ui/chart.tsx` (`ChartContainer`, `ChartTooltipContent`, `ChartLegendContent`) — no custom SVG/canvas charts
+6. **Chart colors exclusively via tokens** — `theme.ts` chart tokens / CSS variables (`--chart-1` to `--chart-5`, `--chart-grid`, `--chart-text`)
+7. **Reduced motion support mandatory** — use `useChart().reducedMotion` to set `isAnimationActive={false}` on all Recharts elements
 
 ### Landing Page Components
 
