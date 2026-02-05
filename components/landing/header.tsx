@@ -36,13 +36,13 @@ export function Header() {
           {/* Nav - minimal */}
           <nav className="hidden items-center gap-8 md:flex">
             <Link
-              href="#feed"
+              href={localePath("/app/feed")}
               className="editorial-link text-sm"
             >
               {t("header.liveFeed")}
             </Link>
             <Link
-              href="#politicians"
+              href={localePath("/app/politicians")}
               className="editorial-link text-sm"
             >
               {t("header.politicians")}

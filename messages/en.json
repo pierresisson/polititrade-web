@@ -248,5 +248,34 @@
     "terms": "Terms",
     "disclaimer": "PolitiTrades provides information for educational and research purposes only. This is not investment advice. Stock trading involves risk; past performance does not guarantee future results. Data sourced from official U.S. government disclosure filings.",
     "copyright": "PolitiTrades. All rights reserved."
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "feed": "Live Feed",
+      "politicians": "Politicians",
+      "watchlist": "Watchlist",
+      "alerts": "Alerts",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Your trading intelligence overview",
+      "todayTrades": "Today's Trades",
+      "activeMembers": "Active Members",
+      "totalVolume": "Total Volume",
+      "yourAlerts": "Your Alerts",
+      "recentTrades": "Recent Trades",
+      "topTraders": "Top Traders",
+      "trendingStocks": "Trending Stocks"
+    },
+    "feed": {
+      "title": "Live Feed",
+      "subtitle": "Real-time congressional stock trades"
+    },
+    "politicians": {
+      "title": "Politicians",
+      "subtitle": "Browse and track all members of Congress"
+    }
   }
 }

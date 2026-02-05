@@ -80,14 +80,14 @@ export function Hero() {
           {/* CTA */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="#pricing"
+              href={localePath("/app")}
               className="inline-flex items-center justify-center gap-2 bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
               {t("hero.startTrial")}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="#feed"
+              href={localePath("/app/feed")}
               className="editorial-link inline-flex items-center gap-2 px-2 text-sm font-medium"
             >
               {t("hero.viewLiveFeed")}

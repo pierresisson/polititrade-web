@@ -248,5 +248,34 @@
     "terms": "Conditions",
     "disclaimer": "PolitiTrades fournit des informations à des fins éducatives et de recherche uniquement. Ce n'est pas un conseil en investissement. Le trading d'actions comporte des risques ; les performances passées ne garantissent pas les résultats futurs. Données issues des déclarations gouvernementales officielles américaines.",
     "copyright": "PolitiTrades. Tous droits réservés."
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "feed": "Flux en direct",
+      "politicians": "Politiciens",
+      "watchlist": "Watchlist",
+      "alerts": "Alertes",
+      "settings": "Paramètres"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "subtitle": "Votre aperçu de l'intelligence trading",
+      "todayTrades": "Trades du jour",
+      "activeMembers": "Membres actifs",
+      "totalVolume": "Volume total",
+      "yourAlerts": "Vos alertes",
+      "recentTrades": "Trades récents",
+      "topTraders": "Top traders",
+      "trendingStocks": "Actions tendance"
+    },
+    "feed": {
+      "title": "Flux en direct",
+      "subtitle": "Transactions boursières du Congrès en temps réel"
+    },
+    "politicians": {
+      "title": "Politiciens",
+      "subtitle": "Parcourir et suivre tous les membres du Congrès"
+    }
   }
 }
