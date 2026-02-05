@@ -276,6 +276,26 @@
     "politicians": {
       "title": "Politiciens",
       "subtitle": "Parcourir et suivre tous les membres du Congrès"
+    },
+    "watchlist": {
+      "title": "Watchlist",
+      "subtitle": "Suivez vos politiciens et actions favoris",
+      "addNew": "Ajouter à la watchlist",
+      "politicians": "Politiciens",
+      "stocks": "Actions",
+      "watchedPoliticians": "Politiciens suivis",
+      "watchedStocks": "Actions suivies",
+      "noPoliticians": "Aucun politicien dans votre watchlist",
+      "noStocks": "Aucune action dans votre watchlist",
+      "browsePoliticians": "Parcourir les politiciens",
+      "browseStocks": "Parcourir les actions",
+      "recentActivity": "Activité récente",
+      "fromYourWatchlist": "De votre watchlist",
+      "noRecentActivity": "Aucune activité récente de votre watchlist",
+      "quickStats": "Stats rapides",
+      "totalWatched": "Total suivi",
+      "tradesThisWeek": "Trades cette semaine",
+      "alertsActive": "Alertes actives"
     }
   }
 }

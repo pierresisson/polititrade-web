@@ -276,6 +276,26 @@
     "politicians": {
       "title": "Politicians",
       "subtitle": "Browse and track all members of Congress"
+    },
+    "watchlist": {
+      "title": "Watchlist",
+      "subtitle": "Track your favorite politicians and stocks",
+      "addNew": "Add to watchlist",
+      "politicians": "Politicians",
+      "stocks": "Stocks",
+      "watchedPoliticians": "Watched Politicians",
+      "watchedStocks": "Watched Stocks",
+      "noPoliticians": "No politicians in your watchlist yet",
+      "noStocks": "No stocks in your watchlist yet",
+      "browsePoliticians": "Browse politicians",
+      "browseStocks": "Browse stocks",
+      "recentActivity": "Recent Activity",
+      "fromYourWatchlist": "From your watchlist",
+      "noRecentActivity": "No recent activity from your watchlist",
+      "quickStats": "Quick Stats",
+      "totalWatched": "Total watched",
+      "tradesThisWeek": "Trades this week",
+      "alertsActive": "Alerts active"
     }
   }
 }

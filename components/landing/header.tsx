@@ -1,16 +1,33 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
+import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t } = useTranslations();
   const localePath = useLocalePath();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="border-b border-foreground/10">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b border-foreground/10 bg-background transition-shadow duration-300",
+        isScrolled && "shadow-sm border-b-border"
+      )}
+    >
       {/* Top bar - minimal */}
       <div className="border-b border-border">
         <div className="mx-auto flex h-10 max-w-6xl items-center justify-between px-6">

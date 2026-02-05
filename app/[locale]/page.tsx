@@ -7,21 +7,24 @@ import { Pricing } from "@/components/landing/pricing";
 import { TrustSection } from "@/components/landing/trust-section";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
+import { MotionProvider } from "@/components/landing/motion";
 
 export default async function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <Hero />
-        <LiveFeed />
-        <TopPoliticians />
-        <ValueProps />
-        <Pricing />
-        <TrustSection />
-        <FAQ />
-      </main>
-      <Footer />
-    </div>
+    <MotionProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main>
+          <Hero />
+          <LiveFeed />
+          <TopPoliticians />
+          <ValueProps />
+          <Pricing />
+          <TrustSection />
+          <FAQ />
+        </main>
+        <Footer />
+      </div>
+    </MotionProvider>
   );
 }

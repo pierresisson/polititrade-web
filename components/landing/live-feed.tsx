@@ -5,12 +5,21 @@ import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { transactions, getPartyColor } from "@/lib/mock-data";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
+import {
+  m,
+  Reveal,
+  fadeUp,
+  fadeUpReduced,
+  staggerFast,
+  useIsReducedMotion,
+} from "./motion";
 
 export function LiveFeed() {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [showAll, setShowAll] = useState(false);
   const displayed = showAll ? transactions : transactions.slice(0, 5);
+  const prefersReducedMotion = useIsReducedMotion();
 
   const formatDaysAgo = (days: number) => {
     if (days === 0) return t("liveFeed.today");
@@ -22,20 +31,24 @@ export function LiveFeed() {
     <section id="feed" className="mx-auto max-w-6xl px-6 py-16 lg:py-24">
       {/* Section header */}
       <div className="mb-8 flex items-end justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-widest text-primary">
-            {t("liveFeed.eyebrow")}
-          </p>
-          <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            {t("liveFeed.title")}
-          </h2>
-        </div>
-        <Link
-          href={localePath("/transactions")}
-          className="editorial-link hidden text-sm font-medium sm:inline"
-        >
-          {t("liveFeed.viewAll")}
-        </Link>
+        <Reveal>
+          <div>
+            <p className="text-sm font-medium uppercase tracking-widest text-primary">
+              {t("liveFeed.eyebrow")}
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
+              {t("liveFeed.title")}
+            </h2>
+          </div>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <Link
+            href={localePath("/transactions")}
+            className="editorial-link hidden text-sm font-medium sm:inline"
+          >
+            {t("liveFeed.viewAll")}
+          </Link>
+        </Reveal>
       </div>
 
       {/* Table */}
@@ -60,11 +73,17 @@ export function LiveFeed() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <m.tbody
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerFast}
+          >
             {displayed.map((tx) => (
-              <tr
+              <m.tr
                 key={tx.id}
                 className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
+                variants={prefersReducedMotion ? fadeUpReduced : fadeUp}
               >
                 <td className="py-4">
                   <div className="flex items-center gap-2">
@@ -104,29 +123,33 @@ export function LiveFeed() {
                     {formatDaysAgo(tx.daysAgo)}
                   </span>
                 </td>
-              </tr>
+              </m.tr>
             ))}
-          </tbody>
+          </m.tbody>
         </table>
       </div>
 
       {/* Load more */}
       {!showAll && transactions.length > 5 && (
-        <button
-          onClick={() => setShowAll(true)}
-          className="mt-6 text-sm font-medium text-primary hover:underline"
-        >
-          {t("common.showMore")}
-        </button>
+        <Reveal>
+          <button
+            onClick={() => setShowAll(true)}
+            className="mt-6 text-sm font-medium text-primary hover:underline"
+          >
+            {t("common.showMore")}
+          </button>
+        </Reveal>
       )}
 
       {/* Mobile CTA */}
-      <Link
-        href={localePath("/transactions")}
-        className="mt-6 block text-sm font-medium text-primary hover:underline sm:hidden"
-      >
-        {t("liveFeed.viewAll")} →
-      </Link>
+      <Reveal>
+        <Link
+          href={localePath("/transactions")}
+          className="mt-6 block text-sm font-medium text-primary hover:underline sm:hidden"
+        >
+          {t("liveFeed.viewAll")} →
+        </Link>
+      </Reveal>
     </section>
   );
 }

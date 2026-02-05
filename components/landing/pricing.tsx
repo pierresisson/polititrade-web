@@ -3,31 +3,45 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
+import {
+  m,
+  Reveal,
+  fadeUp,
+  fadeUpReduced,
+  useIsReducedMotion,
+} from "./motion";
 
 const planKeys = ["free", "pro", "team"] as const;
 
 export function Pricing() {
   const { t, getSection } = useTranslations();
   const localePath = useLocalePath();
+  const prefersReducedMotion = useIsReducedMotion();
 
   return (
     <section id="pricing" className="mx-auto max-w-6xl px-6 py-16 lg:py-24">
       {/* Section header */}
       <div className="mb-12 text-center">
-        <p className="text-sm font-medium uppercase tracking-widest text-primary">
-          {t("pricing.eyebrow")}
-        </p>
-        <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-          {t("pricing.title")}
-        </h2>
-        <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-          {t("pricing.subtitle")}
-        </p>
+        <Reveal>
+          <p className="text-sm font-medium uppercase tracking-widest text-primary">
+            {t("pricing.eyebrow")}
+          </p>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-4xl">
+            {t("pricing.title")}
+          </h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
+            {t("pricing.subtitle")}
+          </p>
+        </Reveal>
       </div>
 
       {/* Pricing cards */}
       <div className="mx-auto grid max-w-4xl gap-px overflow-hidden border border-border bg-border md:grid-cols-3">
-        {planKeys.map((planKey) => {
+        {planKeys.map((planKey, index) => {
           const plan = getSection(`pricing.plans.${planKey}`) as {
             name: string;
             price: string;
@@ -37,13 +51,20 @@ export function Pricing() {
             features: string[];
           };
           const isFeatured = planKey === "pro";
+          // Pro plan (featured) appears slightly later
+          const delay = isFeatured ? 0.15 : index * 0.08;
 
           return (
-            <div
+            <m.div
               key={planKey}
-              className={`flex flex-col bg-card p-6 ${
+              className={`flex flex-col bg-card p-6 transition-shadow duration-200 hover:shadow-sm ${
                 isFeatured ? "bg-secondary/50" : ""
               }`}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={prefersReducedMotion ? fadeUpReduced : fadeUp}
+              transition={{ delay }}
             >
               {/* Plan header */}
               <div>
@@ -75,25 +96,32 @@ export function Pricing() {
               </ul>
 
               {/* CTA */}
-              <Link
-                href={localePath(planKey === "team" ? "/contact" : "/signup")}
-                className={`mt-8 block py-3 text-center text-sm font-medium transition-colors ${
-                  isFeatured
-                    ? "bg-foreground text-background hover:opacity-90"
-                    : "border border-foreground hover:bg-foreground hover:text-background"
-                }`}
+              <m.div
+                whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+                transition={{ duration: 0.12 }}
               >
-                {plan.cta}
-              </Link>
-            </div>
+                <Link
+                  href={localePath(planKey === "team" ? "/contact" : "/signup")}
+                  className={`mt-8 block py-3 text-center text-sm font-medium transition-all duration-200 ${
+                    isFeatured
+                      ? "bg-foreground text-background hover:opacity-90"
+                      : "border border-foreground hover:bg-foreground hover:text-background"
+                  }`}
+                >
+                  {plan.cta}
+                </Link>
+              </m.div>
+            </m.div>
           );
         })}
       </div>
 
       {/* Note */}
-      <p className="mt-8 text-center text-sm text-muted-foreground">
-        {t("pricing.trialNote")}
-      </p>
+      <Reveal delay={0.2}>
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          {t("pricing.trialNote")}
+        </p>
+      </Reveal>
     </section>
   );
 }
