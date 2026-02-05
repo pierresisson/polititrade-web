@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Header() {
   return (
@@ -12,15 +13,7 @@ export function Header() {
             <span className="hidden sm:inline">·</span>
             <span className="hidden sm:inline">Updated live</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/en" className="text-xs text-muted-foreground hover:text-foreground">
-              EN
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link href="/fr" className="text-xs text-muted-foreground hover:text-foreground">
-              FR
-            </Link>
-          </div>
+          <LanguageSwitcher />
         </div>
       </div>
 
