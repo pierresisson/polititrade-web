@@ -5,11 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-pnpm dev      # Start development server (localhost:3000)
-pnpm build    # Production build
-pnpm start    # Start production server
-pnpm lint     # Run ESLint
+bun dev      # Start development server (localhost:3000)
+bun build    # Production build
+bun start    # Start production server
+bun lint     # Run ESLint
 ```
+
+**Package manager**: Bun
 
 ## Architecture
 
@@ -20,7 +22,7 @@ pnpm lint     # Run ESLint
 - **React 19** with TypeScript strict mode
 - **Tailwind CSS v4** with CSS variables for theming
 - **shadcn/ui** (radix-nova style) - components in `components/ui/`
-- **Convex** - Backend-as-a-service (installed, not yet integrated)
+- **Supabase** - Backend (PostgreSQL + Auth)
 - **Lucide React** - Icon library
 
 ### Project Structure
@@ -44,7 +46,7 @@ cn("base-class", condition && "conditional-class")
 
 **Adding shadcn components**:
 ```bash
-pnpm dlx shadcn@latest add <component-name>
+bunx shadcn@latest add <component-name>
 ```
 
 **RSC by default**: Components are Server Components unless marked with `"use client"` directive.
