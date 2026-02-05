@@ -13,6 +13,22 @@ bun lint     # Run ESLint
 
 **Package manager**: Bun
 
+## Supabase
+
+**Project**: polititrade (ref: `ccudiuoemukctisvdgcm`) - West EU (Ireland)
+
+```bash
+supabase link --project-ref ccudiuoemukctisvdgcm  # Link project
+supabase db push                                   # Push migrations
+supabase gen types typescript --local > lib/database.types.ts  # Generate types
+```
+
+**Packages**: `@supabase/supabase-js`, `@supabase/ssr`
+
+**Env vars** (in `.env.local`):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
 ## Architecture
 
 **PolitiTrades** - Web app tracking insider trades from politicians and executives. See `product.md` for full product vision.
@@ -59,6 +75,7 @@ Agent skills in `.agents/skills/` - consult when working on related tasks.
 
 | Skill | Use For | Path |
 |-------|---------|------|
+| **supabase-postgres-best-practices** | Queries, indexes, RLS, schema design, connection pooling, monitoring | `.agents/skills/supabase-postgres-best-practices/` |
 | **next-best-practices** | RSC boundaries, async patterns, hydration errors, metadata, image/font optimization, route handlers | `.agents/skills/next-best-practices/` |
 | **vercel-react-best-practices** | 57 rules: waterfalls, bundle size, server perf, rerenders, JS optimization | `.agents/skills/vercel-react-best-practices/` |
 | **ui-ux-pro-max** | Design systems, color palettes, typography, styles (glassmorphism, etc.), accessibility | `.agents/skills/ui-ux-pro-max/` |
