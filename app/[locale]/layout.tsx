@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "../globals.css";
 import { locales } from "@/lib/i18n";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "PolitiTrades",
-  description: "Track insider trades from politicians and executives",
+  title: "PolitiTrades - Trade Like an Insider",
+  description: "Track insider trades from politicians and executives. Real-time monitoring of congressional stock trades and financial disclosures.",
 };
 
 export async function generateStaticParams() {
@@ -34,7 +37,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${fraunces.variable} ${inter.variable} font-body antialiased`}
       >
         {children}
       </body>

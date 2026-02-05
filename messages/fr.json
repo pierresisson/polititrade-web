@@ -3,10 +3,220 @@
     "home": "Accueil",
     "search": "Rechercher",
     "login": "Connexion",
-    "signup": "S'inscrire"
+    "signup": "S'inscrire",
+    "getStarted": "Commencer",
+    "viewAll": "Voir tout",
+    "learnMore": "En savoir plus"
+  },
+  "header": {
+    "transactions": "Transactions",
+    "politicians": "Politiciens",
+    "pricing": "Tarifs",
+    "faq": "FAQ"
   },
   "hero": {
-    "title": "Tradez comme un initié",
-    "subtitle": "Suivez les forces qui font bouger les marchés"
+    "badge": "Donnees de trading du Congres en temps reel",
+    "title": "Tradez comme un",
+    "titleHighlight": "Initie",
+    "subtitle": "Suivez les transactions boursieres des politiciens et dirigeants avant que le marche ne reagisse. Recevez des alertes en temps reel basees sur les declarations officielles.",
+    "searchPlaceholder": "Rechercher un politicien ou une action...",
+    "trending": "Tendances",
+    "stats": {
+      "trackedTrades": "Transactions suivies",
+      "politicians": "Politiciens",
+      "monitoring": "Surveillance"
+    }
+  },
+  "liveFeed": {
+    "title": "Flux de Transactions en Direct",
+    "subtitle": "Transactions boursieres en temps reel des membres du Congres",
+    "filters": "Filtres",
+    "export": "Exporter",
+    "viewAll": "Voir toutes les transactions",
+    "table": {
+      "politician": "Politicien",
+      "stock": "Action",
+      "action": "Action",
+      "amount": "Montant",
+      "tradeDate": "Date",
+      "filed": "Declare"
+    }
+  },
+  "topPoliticians": {
+    "badge": "Les plus actifs",
+    "title": "Top Politiciens par Volume de Trading",
+    "subtitle": "Suivez les traders les plus actifs du Congres. Performance basee sur les transactions declarees des 12 derniers mois.",
+    "viewAll": "Voir tout",
+    "trades": "Trades",
+    "volume": "Volume",
+    "performance": "Performance",
+    "topStock": "Top Action"
+  },
+  "valueProps": {
+    "title": "Tout ce dont vous avez besoin pour suivre les trades des inities",
+    "subtitle": "PolitiTrades vous donne les outils pour surveiller les transactions boursieres du Congres, analyser les performances et garder une longueur d'avance.",
+    "features": {
+      "alerts": {
+        "title": "Alertes en Temps Reel",
+        "description": "Recevez des notifications instantanees lorsque des politiciens declarent de nouvelles transactions."
+      },
+      "analytics": {
+        "title": "Analyses de Performance",
+        "description": "Suivez les performances de trading des politiciens. Comparez les rendements aux indices de reference."
+      },
+      "filings": {
+        "title": "Declarations Officielles",
+        "description": "Donnees provenant directement des declarations SEC et Congres. 100% precises."
+      },
+      "follow": {
+        "title": "Suivre des Politiciens",
+        "description": "Creez des listes de suivi et soyez notifie de leurs transactions."
+      },
+      "notifications": {
+        "title": "Notifications Personnalisees",
+        "description": "Configurez des alertes pour des actions, secteurs ou patterns specifiques."
+      },
+      "history": {
+        "title": "Donnees Historiques",
+        "description": "Acces a des annees de donnees de trading. Analysez les tendances."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Tarification Simple et Transparente",
+    "subtitle": "Commencez gratuitement et passez a la version superieure selon vos besoins.",
+    "popular": "Le plus populaire",
+    "annualDiscount": "Economisez 20% avec la facturation annuelle. Annulez a tout moment.",
+    "plans": {
+      "guest": {
+        "name": "Visiteur",
+        "price": "Gratuit",
+        "description": "Parcourez les donnees publiques sans compte",
+        "features": [
+          "Voir les transactions recentes",
+          "Profils de base des politiciens",
+          "Historique limite (30 jours)",
+          "Acces communautaire"
+        ],
+        "cta": "Parcourir"
+      },
+      "free": {
+        "name": "Gratuit",
+        "price": "0€",
+        "period": "/mois",
+        "description": "Creez un compte pour debloquer plus de fonctionnalites",
+        "features": [
+          "Tout ce qui est dans Visiteur",
+          "Suivre jusqu'a 5 politiciens",
+          "Resume quotidien par email",
+          "Historique etendu (90 jours)",
+          "Recherche et filtres basiques"
+        ],
+        "cta": "Creer un compte"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "19€",
+        "period": "/mois",
+        "description": "Acces complet a toutes les fonctionnalites",
+        "features": [
+          "Tout ce qui est dans Gratuit",
+          "Suivi illimite de politiciens",
+          "Notifications push en temps reel",
+          "Historique complet",
+          "Analyses avancees",
+          "Comparaisons de performance",
+          "Acces API",
+          "Support prioritaire"
+        ],
+        "cta": "Essai gratuit"
+      }
+    }
+  },
+  "trust": {
+    "title": "Des Donnees Fiables",
+    "subtitle": "Toutes les donnees proviennent directement des declarations gouvernementales officielles.",
+    "sources": {
+      "house": {
+        "title": "Chambre des Representants",
+        "description": "Rapports de divulgation financiere officiels"
+      },
+      "senate": {
+        "title": "Senat Americain",
+        "description": "Rapports de transactions periodiques"
+      },
+      "sec": {
+        "title": "SEC EDGAR",
+        "description": "Systeme de depot electronique de la SEC"
+      },
+      "stock": {
+        "title": "Conformite STOCK Act",
+        "description": "Declarations de la loi STOCK"
+      }
+    },
+    "stats": {
+      "accuracy": "Precision des donnees",
+      "frequency": "Frequence de mise a jour",
+      "years": "Annees de donnees",
+      "members": "Membres suivis"
+    },
+    "updateNote": "Donnees mises a jour dans les 15 minutes suivant la publication officielle."
+  },
+  "faq": {
+    "title": "Questions Frequentes",
+    "subtitle": "Tout ce que vous devez savoir sur PolitiTrades et les donnees de trading du Congres.",
+    "questions": {
+      "source": {
+        "question": "D'ou proviennent les donnees de PolitiTrades?",
+        "answer": "Toutes les donnees proviennent directement des declarations gouvernementales officielles, incluant les rapports de la Chambre des Representants, du Senat et les depots SEC EDGAR."
+      },
+      "speed": {
+        "question": "A quelle vitesse les nouvelles transactions sont-elles ajoutees?",
+        "answer": "Nous surveillons les systemes de depot en continu et ajoutons les nouvelles transactions dans les 15 minutes suivant leur publication."
+      },
+      "legal": {
+        "question": "Est-il legal pour les politiciens de trader des actions?",
+        "answer": "Oui, les membres du Congres peuvent trader des actions mais doivent declarer leurs transactions dans les 45 jours selon le STOCK Act."
+      },
+      "investment": {
+        "question": "Puis-je utiliser ces donnees pour mes decisions d'investissement?",
+        "answer": "PolitiTrades fournit des informations a des fins educatives et de recherche. Ce n'est pas un conseil en investissement."
+      },
+      "premium": {
+        "question": "Qu'est-ce qui est inclus dans le plan Premium?",
+        "answer": "Le Premium inclut le suivi illimite, les notifications en temps reel, l'historique complet, les analyses avancees et l'acces API."
+      },
+      "cancel": {
+        "question": "Puis-je annuler mon abonnement a tout moment?",
+        "answer": "Oui, vous pouvez annuler votre abonnement Premium a tout moment. Votre acces continue jusqu'a la fin de votre periode de facturation."
+      },
+      "api": {
+        "question": "Proposez-vous une API?",
+        "answer": "Oui, les abonnes Premium ont acces a notre API REST qui fournit un acces programmatique a toutes les donnees."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Suivez les transactions des politiciens et dirigeants. Prenez des decisions d'investissement eclairees.",
+    "product": "Produit",
+    "resources": "Ressources",
+    "company": "Entreprise",
+    "links": {
+      "features": "Fonctionnalites",
+      "pricing": "Tarifs",
+      "api": "API",
+      "changelog": "Changelog",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "support": "Support",
+      "status": "Statut",
+      "about": "A propos",
+      "contact": "Contact",
+      "privacy": "Confidentialite",
+      "terms": "Conditions"
+    },
+    "disclaimer": "PolitiTrades fournit des informations a des fins educatives et de recherche uniquement. Ce n'est pas un conseil en investissement. Le trading d'actions comporte des risques et les performances passees ne garantissent pas les resultats futurs.",
+    "copyright": "PolitiTrades. Tous droits reserves.",
+    "dataSource": "Donnees provenant des declarations gouvernementales officielles americaines."
   }
 }

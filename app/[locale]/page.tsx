@@ -1,13 +1,27 @@
-import { ComponentExample } from "@/components/component-example";
-import { getDictionary, type Locale } from "@/lib/i18n";
+import { Header } from "@/components/landing/header";
+import { Hero } from "@/components/landing/hero";
+import { LiveFeed } from "@/components/landing/live-feed";
+import { TopPoliticians } from "@/components/landing/top-politicians";
+import { ValueProps } from "@/components/landing/value-props";
+import { Pricing } from "@/components/landing/pricing";
+import { TrustSection } from "@/components/landing/trust-section";
+import { FAQ } from "@/components/landing/faq";
+import { Footer } from "@/components/landing/footer";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const dict = await getDictionary(locale as Locale);
-
-  return <ComponentExample />;
+export default async function LandingPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Hero />
+        <LiveFeed />
+        <TopPoliticians />
+        <ValueProps />
+        <Pricing />
+        <TrustSection />
+        <FAQ />
+      </main>
+      <Footer />
+    </div>
+  );
 }

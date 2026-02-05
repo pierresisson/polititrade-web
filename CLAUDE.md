@@ -67,7 +67,54 @@ bunx shadcn@latest add <component-name>
 
 **RSC by default**: Components are Server Components unless marked with `"use client"` directive.
 
-**Fonts**: Geist Sans and Geist Mono via Next.js font optimization (CSS variables `--font-geist-sans`, `--font-geist-mono`).
+**Fonts**: Fraunces (display/headings) + Inter (body/UI) via Next.js font optimization (CSS variables `--font-fraunces`, `--font-inter`).
+
+## Design System PolitiTrades
+
+Centralized design tokens in `lib/theme.ts`. All colors defined in `app/globals.css` CSS variables.
+
+### Color Palette
+
+| Token | Light Mode | Usage |
+|-------|------------|-------|
+| `--background` | `#FAF7F0` | Page background (warm ecru) |
+| `--foreground` | `#1F1E1A` | Primary text |
+| `--card` | `#FFFFFF` | Card surfaces |
+| `--primary` | `#4F46E5` | Indigo - primary actions |
+| `--secondary` | `#FFFCF6` | Light ecru surface |
+| `--muted-foreground` | `#6B6A63` | Secondary text |
+| `--accent` | `#FEF3C7` | Amber highlight |
+| `--border` | `#E8E5DD` | Subtle borders |
+| `--chart-1` to `--chart-5` | Indigo, Violet, Cyan, Amber, Emerald | Data visualization |
+| `--success` | `#10B981` | Positive/buy indicators |
+| `--destructive` | `#EF4444` | Negative/sell indicators |
+
+### Typography
+
+- **Display/Headings**: `font-display` (Fraunces) - serif, elegant
+- **Body/UI**: `font-body` (Inter) - sans-serif, readable
+
+### Rules
+
+1. **Zero hardcoded colors** - Use CSS variables or Tailwind semantic classes
+2. **shadcn/ui only** - All components from `components/ui/`
+3. **Consistent spacing** - Use Tailwind spacing scale
+4. **Semantic colors** - `text-foreground`, `bg-card`, `border-border`, etc.
+
+### Landing Page Components
+
+```
+components/landing/
+├── header.tsx          # Sticky nav + CTAs
+├── hero.tsx            # H1 + search + preview card
+├── live-feed.tsx       # Transaction table (client)
+├── top-politicians.tsx # Politician cards grid
+├── value-props.tsx     # Feature cards
+├── pricing.tsx         # 3 pricing plans
+├── trust-section.tsx   # Data sources
+├── faq.tsx             # Accordion (client)
+└── footer.tsx          # Links + disclaimer
+```
 
 ## Skills Reference
 
