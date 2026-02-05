@@ -249,6 +249,14 @@
     "disclaimer": "PolitiTrades provides information for educational and research purposes only. This is not investment advice. Stock trading involves risk; past performance does not guarantee future results. Data sourced from official U.S. government disclosure filings.",
     "copyright": "PolitiTrades. All rights reserved."
   },
+  "auth": {
+    "signOut": "Sign out",
+    "signingIn": "Signing in...",
+    "myAccount": "My account",
+    "errorTitle": "Authentication error",
+    "errorDescription": "Something went wrong during sign in. Please try again.",
+    "backToHome": "Back to home"
+  },
   "app": {
     "nav": {
       "dashboard": "Dashboard",
