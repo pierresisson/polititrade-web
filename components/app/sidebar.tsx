@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const navigation = [
   { key: "dashboard", href: "/app", icon: LayoutDashboard },
@@ -30,6 +33,16 @@ export function AppSidebar() {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const isActive = (href: string) => {
     const fullPath = localePath(href);
@@ -92,18 +105,31 @@ export function AppSidebar() {
         })}
       </div>
 
-      {/* User / Pro badge */}
-      <div className="border-t border-border p-4">
-        <div className="flex items-center gap-3 rounded-md bg-primary/5 px-3 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-            PS
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">Pierre S.</p>
-            <p className="text-xs text-muted-foreground">Pro Plan</p>
+      {/* User */}
+      {user && (
+        <div className="border-t border-border p-4">
+          <div className="flex items-center gap-3 rounded-md bg-primary/5 px-3 py-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+              {user.user_metadata?.full_name
+                ? user.user_metadata.full_name
+                    .split(" ")
+                    .map((n: string) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)
+                : "?"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {user.user_metadata?.full_name || user.email}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </aside>
   );
 }

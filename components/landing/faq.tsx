@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useTranslations } from "@/lib/i18n-context";
-import { Reveal, StaggerContainer, StaggerItem } from "./motion";
+import { Reveal } from "./motion";
 
 export function FAQ() {
   const { t, getSection } = useTranslations();
@@ -26,25 +26,24 @@ export function FAQ() {
       </Reveal>
 
       {/* Accordion - minimal editorial style */}
-      <StaggerContainer className="max-w-3xl">
+      <Reveal className="max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
           {questions.map((faq, i) => (
-            <StaggerItem key={i}>
-              <AccordionItem
-                value={`item-${i}`}
-                className="border-b border-border py-2"
-              >
-                <AccordionTrigger className="py-4 text-left font-display text-lg font-medium hover:no-underline [&[data-state=open]]:text-primary">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 text-muted-foreground">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            </StaggerItem>
+            <AccordionItem
+              key={i}
+              value={`item-${i}`}
+              className="border-b border-border py-2"
+            >
+              <AccordionTrigger className="py-4 text-left font-display text-lg font-medium hover:no-underline [&[data-state=open]]:text-primary">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="pb-4 text-muted-foreground">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
           ))}
         </Accordion>
-      </StaggerContainer>
+      </Reveal>
     </section>
   );
 }
