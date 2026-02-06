@@ -8,9 +8,9 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 export async function signInWithGoogle(locale: string) {
   const supabase = await createClient();
   const headerStore = await headers();
-  const origin = headerStore.get("origin") || headerStore.get("x-forwarded-host") || headerStore.get("host") || "";
+  const host = headerStore.get("x-forwarded-host") || headerStore.get("host") || "";
   const protocol = headerStore.get("x-forwarded-proto") || "https";
-  const baseUrl = origin.startsWith("http") ? origin : `${protocol}://${origin}`;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

@@ -293,7 +293,8 @@
       "politicians": "Politiciens",
       "watchlist": "Watchlist",
       "alerts": "Alertes",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "admin": "Admin"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -338,6 +339,7 @@
       "title": "Paramètres",
       "account": "Compte",
       "email": "E-mail",
+      "role": "Rôle",
       "signOut": "Se déconnecter",
       "dangerZone": "Zone de danger",
       "deleteAccount": "Supprimer mon compte",
@@ -346,6 +348,38 @@
       "deleteConfirmAction": "Confirmer la suppression",
       "deleting": "Suppression...",
       "cancel": "Annuler"
+    },
+    "admin": {
+      "title": "Tableau de bord Admin",
+      "badge": "Admin",
+      "accessDenied": "Accès refusé",
+      "accessDeniedDescription": "Vous n'avez pas la permission d'accéder à la zone admin.",
+      "backToDashboard": "Retour au tableau de bord",
+      "ingestion": {
+        "title": "Statut d'ingestion",
+        "source": "Source",
+        "totalDocs": "Total docs",
+        "parsed": "Analysés",
+        "errors": "Erreurs",
+        "lastRun": "Dernière exécution",
+        "trigger": "Lancer l'ingestion",
+        "running": "En cours...",
+        "success": "Ingestion terminée",
+        "failed": "Échec de l'ingestion"
+      },
+      "trades": {
+        "title": "Revue des trades",
+        "person": "Personne",
+        "ticker": "Ticker",
+        "type": "Type",
+        "date": "Date",
+        "reviewStatus": "Statut",
+        "verified": "Vérifié",
+        "toReview": "À vérifier",
+        "markVerified": "Marquer comme vérifié",
+        "markToReview": "Signaler pour vérification",
+        "clearStatus": "Effacer le statut"
+      }
     },
     "commandPalette": {
       "title": "Recherche",

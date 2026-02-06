@@ -12,7 +12,8 @@ import {
 import { useTranslations, useLocale, useLocalePath } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { navigationItems } from "@/lib/command-items";
+import { navigationItems, adminNavigationItems } from "@/lib/command-items";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -64,12 +65,24 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) {
+        supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single()
+          .then(({ data }) => setIsAdmin(data?.is_admin === true));
+      }
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (!session?.user) setIsAdmin(false);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -126,6 +139,29 @@ export function AppSidebar() {
             </Link>
           );
         })}
+        {isAdmin && (
+          <>
+            <div className="my-2 border-t border-border" />
+            {adminNavigationItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.labelKey}
+                  href={localePath(item.href)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {t(`app.nav.${item.labelKey}`)}
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
 
       {/* User dropdown */}
@@ -152,8 +188,13 @@ export function AppSidebar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" align="start" className="w-56">
               <DropdownMenuLabel>
-                <span className="block text-sm font-medium text-foreground">
+                <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                   {user.user_metadata?.full_name || user.email}
+                  {isAdmin && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {t("app.admin.badge")}
+                    </Badge>
+                  )}
                 </span>
                 <span className="block text-xs font-normal text-muted-foreground truncate">
                   {user.email}

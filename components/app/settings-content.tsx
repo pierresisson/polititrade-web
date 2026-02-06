@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { LogOut, Trash2 } from "lucide-react";
+import { LogOut, Trash2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { useTranslations, useLocale } from "@/lib/i18n-context";
 import { createClient } from "@/lib/supabase/client";
 import { signOut, deleteAccount } from "@/lib/auth/actions";
@@ -30,11 +31,22 @@ export function SettingsContent() {
   const { t } = useTranslations();
   const locale = useLocale();
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) {
+        supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single()
+          .then(({ data }) => setIsAdmin(data?.is_admin === true));
+      }
+    });
   }, []);
 
   return (
@@ -59,6 +71,19 @@ export function SettingsContent() {
               </label>
               <p className="mt-1 text-sm">{user?.email ?? "..."}</p>
             </div>
+            {isAdmin && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">
+                  {t("app.settings.role")}
+                </label>
+                <div className="mt-1">
+                  <Badge variant="secondary" className="gap-1">
+                    <ShieldCheck className="h-3 w-3" />
+                    {t("app.admin.badge")}
+                  </Badge>
+                </div>
+              </div>
+            )}
             <Button
               variant="outline"
               onClick={() => startTransition(() => signOut(locale))}

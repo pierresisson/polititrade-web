@@ -4,6 +4,7 @@ import {
   Users,
   Star,
   Settings,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,5 +32,10 @@ export const navigationItems: CommandNavItem[] = [
   { labelKey: "politicians", href: "/app/politicians", icon: Users },
   { labelKey: "watchlist", href: "/app/watchlist", icon: Star },
   { labelKey: "settings", href: "/app/settings", icon: Settings },
+];
+
+/** Admin nav — shown only when user has is_admin */
+export const adminNavigationItems: CommandNavItem[] = [
+  { labelKey: "admin", href: "/app/admin", icon: ShieldCheck },
 ];
 

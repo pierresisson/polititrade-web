@@ -294,7 +294,8 @@
       "politicians": "Politicians",
       "watchlist": "Watchlist",
       "alerts": "Alerts",
-      "settings": "Settings"
+      "settings": "Settings",
+      "admin": "Admin"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -339,6 +340,7 @@
       "title": "Settings",
       "account": "Account",
       "email": "Email",
+      "role": "Role",
       "signOut": "Sign out",
       "dangerZone": "Danger zone",
       "deleteAccount": "Delete my account",
@@ -347,6 +349,38 @@
       "deleteConfirmAction": "Confirm deletion",
       "deleting": "Deleting...",
       "cancel": "Cancel"
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "badge": "Admin",
+      "accessDenied": "Access Denied",
+      "accessDeniedDescription": "You do not have permission to access the admin area.",
+      "backToDashboard": "Back to dashboard",
+      "ingestion": {
+        "title": "Ingestion Status",
+        "source": "Source",
+        "totalDocs": "Total Docs",
+        "parsed": "Parsed",
+        "errors": "Errors",
+        "lastRun": "Last Run",
+        "trigger": "Run Ingestion",
+        "running": "Running...",
+        "success": "Ingestion complete",
+        "failed": "Ingestion failed"
+      },
+      "trades": {
+        "title": "Trade Review",
+        "person": "Person",
+        "ticker": "Ticker",
+        "type": "Type",
+        "date": "Date",
+        "reviewStatus": "Status",
+        "verified": "Verified",
+        "toReview": "To Review",
+        "markVerified": "Mark as verified",
+        "markToReview": "Flag for review",
+        "clearStatus": "Clear status"
+      }
     },
     "commandPalette": {
       "title": "Search",
