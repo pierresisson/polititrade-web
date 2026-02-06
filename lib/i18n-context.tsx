@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { isValidLocale, defaultLocale, buildLocalePath } from "@/lib/i18n";
 
 // Type for the dictionary
 type Dictionary = Record<string, unknown>;
@@ -60,12 +61,12 @@ export function useTranslations() {
 // Hook to get current locale from pathname
 export function useLocale() {
   const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
-  return segments[0] || "en";
+  const first = pathname.split("/").filter(Boolean)[0];
+  return first && isValidLocale(first) ? first : defaultLocale;
 }
 
-// Helper to build localized paths
+// Helper to build localized paths (omits /en/ for default locale)
 export function useLocalePath() {
   const locale = useLocale();
-  return (path: string) => `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
+  return (path: string) => buildLocalePath(path, locale);
 }

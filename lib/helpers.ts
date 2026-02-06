@@ -54,3 +54,21 @@ export function formatDate(date: string | null): string {
     year: "numeric",
   });
 }
+
+export function formatReturn(value: number | null | undefined): string {
+  if (value == null) return "—";
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${value.toFixed(1)}%`;
+}
+
+export function getReturnColor(value: number | null | undefined): string {
+  if (value == null) return "text-muted-foreground";
+  if (value > 0) return "text-success";
+  if (value < 0) return "text-destructive";
+  return "text-muted-foreground";
+}
+
+export function formatPrice(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}

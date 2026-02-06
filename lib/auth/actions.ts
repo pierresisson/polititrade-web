@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { buildLocalePath } from "@/lib/i18n";
 
 export async function signInWithGoogle(locale: string) {
   const supabase = await createClient();
@@ -15,12 +16,12 @@ export async function signInWithGoogle(locale: string) {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${baseUrl}/auth/callback?next=/${locale}`,
+      redirectTo: `${baseUrl}/auth/callback?next=${buildLocalePath("/", locale)}`,
     },
   });
 
   if (error) {
-    redirect(`/${locale}/auth/error`);
+    redirect(buildLocalePath("/auth/error", locale));
   }
 
   if (data.url) {
@@ -31,7 +32,7 @@ export async function signInWithGoogle(locale: string) {
 export async function signOut(locale: string) {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect(`/${locale}`);
+  redirect(buildLocalePath("/", locale));
 }
 
 export async function deleteAccount(locale: string) {
@@ -41,7 +42,7 @@ export async function deleteAccount(locale: string) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/${locale}`);
+    redirect(buildLocalePath("/", locale));
   }
 
   const admin = createAdminClient(
@@ -55,5 +56,5 @@ export async function deleteAccount(locale: string) {
   }
 
   await supabase.auth.signOut();
-  redirect(`/${locale}`);
+  redirect(buildLocalePath("/", locale));
 }

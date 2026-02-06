@@ -63,8 +63,6 @@ function getTooltipForFeature(
   const lower = feature.toLowerCase();
   if (lower.includes("csv") || lower.includes("export"))
     return tooltips.exportCsv;
-  if (lower.includes("alert") || lower.includes("alerte"))
-    return tooltips.alertes;
   if (
     lower.includes("filtr") &&
     (lower.includes("avanc") || lower.includes("advanc"))

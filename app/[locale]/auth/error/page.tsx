@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getDictionary, type Locale } from "@/lib/i18n";
+import { getDictionary, type Locale, buildLocalePath } from "@/lib/i18n";
 
 export default async function AuthErrorPage({
   params,
@@ -21,7 +21,7 @@ export default async function AuthErrorPage({
           {auth.errorDescription}
         </p>
         <Button asChild className="mt-8">
-          <Link href={`/${locale}`}>{auth.backToHome}</Link>
+          <Link href={buildLocalePath("/", locale)}>{auth.backToHome}</Link>
         </Button>
       </div>
     </div>

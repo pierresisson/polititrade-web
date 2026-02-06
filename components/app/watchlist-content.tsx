@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   Star,
-  Bell,
   Trash2,
   Plus,
   Users,
@@ -149,12 +148,6 @@ export function WatchlistContent() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
                   {t("app.watchlist.tradesThisWeek")}
-                </span>
-                <span className="font-semibold">0</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {t("app.watchlist.alertsActive")}
                 </span>
                 <span className="font-semibold">0</span>
               </div>

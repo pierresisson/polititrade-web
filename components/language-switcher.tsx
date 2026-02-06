@@ -2,18 +2,17 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { stripLocaleFromPathname, buildLocalePath } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n-context";
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
-
-  // Extract current locale and path without locale
-  const segments = pathname.split("/").filter(Boolean);
-  const currentLocale = segments[0];
-  const pathWithoutLocale = segments.slice(1).join("/");
+  const currentLocale = useLocale();
+  const pathWithoutLocale = stripLocaleFromPathname(pathname);
 
   // Build new paths
-  const enPath = `/en${pathWithoutLocale ? `/${pathWithoutLocale}` : ""}`;
-  const frPath = `/fr${pathWithoutLocale ? `/${pathWithoutLocale}` : ""}`;
+  const enPath = buildLocalePath(pathWithoutLocale, "en");
+  const frPath = buildLocalePath(pathWithoutLocale, "fr");
 
   return (
     <div className="flex items-center gap-2">

@@ -3,9 +3,13 @@ import { formatVolume } from "@/lib/helpers";
 import type {
   PoliticianWithStats,
   TradeWithPolitician,
+  TradePerformanceData,
+  PricePoint,
   TrendingStock,
   WeeklyStats,
 } from "./types";
+import { computePoliticianPerformance } from "@/lib/prices/performance";
+import type { PoliticianPerformanceStats } from "@/lib/prices/performance";
 
 // Exclude non-stock assets (treasury notes, bonds, etc.) while keeping rows with null asset_name
 const STOCK_ONLY_FILTER =
@@ -268,4 +272,58 @@ export async function getPoliticianTrades(
   })) as TradeWithPolitician[];
 
   return { trades, total: count ?? 0 };
+}
+
+// ─── Performance queries ──────────────────────────────────────────────
+
+export async function getTradePerformances(
+  tradeIds: string[]
+): Promise<Map<string, TradePerformanceData>> {
+  if (tradeIds.length === 0) return new Map();
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("trade_performance")
+    .select("*")
+    .in("trade_id", tradeIds);
+
+  if (error || !data) return new Map();
+
+  const map = new Map<string, TradePerformanceData>();
+  for (const row of data) {
+    map.set(row.trade_id, row as TradePerformanceData);
+  }
+  return map;
+}
+
+export async function getPoliticianPerformance(
+  politicianId: string,
+  filters?: { tradeType?: "buy" | "sell" }
+): Promise<PoliticianPerformanceStats> {
+  const supabase = await createClient();
+  return computePoliticianPerformance(supabase, politicianId, filters);
+}
+
+export async function getPriceHistory(
+  ticker: string,
+  from: string,
+  to: string
+): Promise<PricePoint[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("stock_prices")
+    .select("price_date, close")
+    .eq("ticker", ticker)
+    .gte("price_date", from)
+    .lte("price_date", to)
+    .order("price_date", { ascending: true });
+
+  if (error || !data) return [];
+
+  return data.map((row) => ({
+    date: row.price_date,
+    close: Number(row.close),
+  }));
 }

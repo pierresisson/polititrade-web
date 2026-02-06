@@ -69,7 +69,7 @@ export function TrustSection() {
           </m.div>
           <m.div variants={prefersReducedMotion ? fadeUpReduced : fadeUp}>
             <p className="font-display text-3xl font-semibold md:text-4xl">&lt;15min</p>
-            <p className="mt-1 text-sm text-muted-foreground">{t("trust.stats.filingToAlert")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("trust.stats.filingToFeed")}</p>
           </m.div>
           <m.div variants={prefersReducedMotion ? fadeUpReduced : fadeUp}>
             <p className="font-display text-3xl font-semibold md:text-4xl">12 yrs</p>

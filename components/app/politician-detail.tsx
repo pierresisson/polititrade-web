@@ -15,9 +15,23 @@ import {
 } from "@/components/ui/pagination";
 import { getInitials, getPartyColor, getPartyBgColor, formatAmountRange, formatDate, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import type { PoliticianWithStats, TradeWithPolitician } from "@/lib/supabase/types";
+import { TradeReturnBadge } from "@/components/performance/trade-return-badge";
+import { UnsupportedAssetBadge } from "@/components/performance/unsupported-asset-badge";
+import { TimeframeSelector } from "@/components/performance/timeframe-selector";
+import { PoliticianPerformanceSection } from "@/components/performance/politician-performance-section";
+import type { PoliticianWithStats, TradeWithPolitician, TradePerformanceData, TradePerformanceMap, PoliticianPerformanceStats, Timeframe, AccessLevel } from "@/lib/supabase/types";
 
 type TradeFilter = "buy" | "sell" | "all";
+
+const TIMEFRAME_RETURN_KEY: Record<Timeframe, keyof TradePerformanceData> = {
+  "1d": "return_1d",
+  "1w": "return_1w",
+  "1m": "return_1m",
+  "3m": "return_3m",
+  "6m": "return_6m",
+  "1y": "return_1y",
+  to_date: "return_to_date",
+};
 
 type Props = {
   politician: PoliticianWithStats;
@@ -25,6 +39,9 @@ type Props = {
   currentPage: number;
   totalPages: number;
   total: number;
+  performanceMap?: TradePerformanceMap;
+  politicianStats?: PoliticianPerformanceStats;
+  accessLevel?: AccessLevel;
 };
 
 function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
@@ -39,10 +56,12 @@ function getPageNumbers(current: number, total: number): (number | "ellipsis")[]
   return pages;
 }
 
-export function AppPoliticianDetail({ politician, trades, currentPage, totalPages, total }: Props) {
+export function AppPoliticianDetail({ politician, trades, currentPage, totalPages, total, performanceMap, politicianStats, accessLevel = "account" }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [filter, setFilter] = useState<TradeFilter>("all");
+  const [timeframe, setTimeframe] = useState<Timeframe>("1m");
+  const hasPerformance = performanceMap && Object.keys(performanceMap).length > 0;
 
   const filteredTransactions =
     filter === "all"
@@ -152,6 +171,16 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
         ))}
       </div>
 
+      {/* Performance section */}
+      {politicianStats && politicianStats.total_evaluated > 0 && (
+        <div className="mb-8">
+          <PoliticianPerformanceSection
+            stats={politicianStats}
+            accessLevel={accessLevel}
+          />
+        </div>
+      )}
+
       {/* Transactions */}
       <div className="rounded-lg border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border p-4">
@@ -164,37 +193,46 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
             </p>
           </div>
 
-          <div className="flex items-center gap-1 rounded-md border border-border">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-3 py-1.5 text-sm transition-colors ${
-                filter === "all"
-                  ? "bg-foreground text-background"
-                  : "hover:bg-secondary"
-              }`}
-            >
-              {t("common.all")}
-            </button>
-            <button
-              onClick={() => setFilter("buy")}
-              className={`px-3 py-1.5 text-sm transition-colors ${
-                filter === "buy"
-                  ? "bg-success text-white"
-                  : "hover:bg-secondary"
-              }`}
-            >
-              {t("politicianDetail.buys")}
-            </button>
-            <button
-              onClick={() => setFilter("sell")}
-              className={`px-3 py-1.5 text-sm transition-colors ${
-                filter === "sell"
-                  ? "bg-destructive text-white"
-                  : "hover:bg-secondary"
-              }`}
-            >
-              {t("politicianDetail.sells")}
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {hasPerformance && (
+              <TimeframeSelector
+                selected={timeframe}
+                onSelect={setTimeframe}
+                accessLevel={accessLevel}
+              />
+            )}
+            <div className="flex items-center gap-1 rounded-md border border-border">
+              <button
+                onClick={() => setFilter("all")}
+                className={`px-3 py-1.5 text-sm transition-colors ${
+                  filter === "all"
+                    ? "bg-foreground text-background"
+                    : "hover:bg-secondary"
+                }`}
+              >
+                {t("common.all")}
+              </button>
+              <button
+                onClick={() => setFilter("buy")}
+                className={`px-3 py-1.5 text-sm transition-colors ${
+                  filter === "buy"
+                    ? "bg-success text-white"
+                    : "hover:bg-secondary"
+                }`}
+              >
+                {t("politicianDetail.buys")}
+              </button>
+              <button
+                onClick={() => setFilter("sell")}
+                className={`px-3 py-1.5 text-sm transition-colors ${
+                  filter === "sell"
+                    ? "bg-destructive text-white"
+                    : "hover:bg-secondary"
+                }`}
+              >
+                {t("politicianDetail.sells")}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -218,6 +256,11 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
                   <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                     {t("liveFeed.filed")}
                   </th>
+                  {hasPerformance && (
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
+                      {t("performance.column")}
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -257,6 +300,17 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
                     <td className="px-4 py-4 text-right text-sm text-muted-foreground">
                       {formatDate(tx.disclosure_date ?? tx.trade_date)}
                     </td>
+                    {hasPerformance && (
+                      <td className="px-4 py-4 text-right">
+                        {(() => {
+                          if (!tx.ticker) return <UnsupportedAssetBadge reason="no_ticker" />;
+                          const perf = performanceMap?.[tx.id];
+                          if (!perf) return <span className="text-xs text-muted-foreground">{t("performance.noData")}</span>;
+                          const returnKey = TIMEFRAME_RETURN_KEY[timeframe];
+                          return <TradeReturnBadge value={perf[returnKey] as number | null} />;
+                        })()}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

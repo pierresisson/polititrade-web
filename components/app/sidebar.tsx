@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -10,8 +9,8 @@ import {
   Check,
 } from "lucide-react";
 import { useTranslations, useLocale, useLocalePath } from "@/lib/i18n-context";
+import { stripLocaleFromPathname, buildLocalePath } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { navigationItems, adminNavigationItems } from "@/lib/command-items";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -58,34 +57,17 @@ const languages = [
 /** Sidebar uses the first 5 items (excludes settings — shown in user menu) */
 const navigation = navigationItems.filter((item) => item.labelKey !== "settings");
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  user: User | null;
+  isAdmin: boolean;
+};
+
+export function AppSidebar({ user, isAdmin }: AppSidebarProps) {
   const { t } = useTranslations();
   const locale = useLocale();
   const localePath = useLocalePath();
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      if (user) {
-        supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", user.id)
-          .single()
-          .then(({ data }) => setIsAdmin(data?.is_admin === true));
-      }
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) setIsAdmin(false);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   const isActive = (href: string) => {
     const fullPath = localePath(href);
@@ -96,9 +78,8 @@ export function AppSidebar() {
   };
 
   const switchLocale = (newLocale: string) => {
-    const segments = pathname.split("/").filter(Boolean);
-    segments[0] = newLocale;
-    router.push(`/${segments.join("/")}`);
+    const pathWithoutLocale = stripLocaleFromPathname(pathname);
+    router.push(buildLocalePath(pathWithoutLocale, newLocale));
   };
 
   const userInitials = user?.user_metadata?.full_name

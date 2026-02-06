@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, ArrowDownRight, TrendingUp, Users, Activity, Bell } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, TrendingUp, Users, Activity } from "lucide-react";
 import { getPartyColor, formatAmountRange, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeWithPolitician, PoliticianWithStats, TrendingStock, WeeklyStats } from "@/lib/supabase/types";
@@ -33,7 +33,7 @@ export function DashboardContent({ trades, politicians, trendingStocks, stats }:
       </div>
 
       {/* Stats cards */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t("app.dashboard.todayTrades")}</p>
@@ -59,15 +59,6 @@ export function DashboardContent({ trades, politicians, trendingStocks, stats }:
           </div>
           <p className="mt-2 font-display text-3xl font-semibold">{stats.totalVolume}</p>
           <p className="mt-1 text-xs text-muted-foreground">this week</p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-card p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">{t("app.dashboard.yourAlerts")}</p>
-            <Bell className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <p className="mt-2 font-display text-3xl font-semibold">0</p>
-          <p className="mt-1 text-xs text-muted-foreground">new this week</p>
         </div>
       </div>
 

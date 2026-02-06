@@ -29,7 +29,7 @@
     "title": "What Congress is",
     "titleHighlight": "buying",
     "titleEnd": "before the market knows",
-    "subtitle": "Track stock trades disclosed by members of Congress. Real-time alerts from official filings.",
+    "subtitle": "Track stock trades disclosed by members of Congress. Real-time data from official filings.",
     "searchPlaceholder": "Search politicians, stocks...",
     "trendingNow": "Trending Now",
     "startTrial": "Start free trial",
@@ -97,6 +97,48 @@
     "showAllTransactions": "Show all transactions",
     "dataSource": "Data sourced from official congressional financial disclosure filings. Amounts shown are reported ranges, not exact figures."
   },
+  "performance": {
+    "title": "Trade Performance",
+    "eyebrow": "Performance Analytics",
+    "column": "Perf.",
+    "timeframes": {
+      "1d": "1D",
+      "1w": "1W",
+      "1m": "1M",
+      "3m": "3M",
+      "6m": "6M",
+      "1y": "1Y",
+      "to_date": "All"
+    },
+    "refPrice": "Price at trade",
+    "currentPrice": "Current price",
+    "refDate": "Reference date",
+    "estimatedDate": "Estimated",
+    "estimatedDateTooltip": "Trade date not available; using disclosure date as estimate",
+    "noData": "No price data",
+    "optionsNotSupported": "Options not supported yet",
+    "tickerNotRecognized": "Ticker not recognized",
+    "statsTitle": "Performance Overview",
+    "avgReturn": "Avg Return",
+    "hitRate": "Hit Rate",
+    "hitRateDescription": "% of buys with positive return",
+    "bestTrade": "Best Trade",
+    "worstTrade": "Worst Trade",
+    "alpha": "Alpha vs S&P 500",
+    "totalEvaluated": "{count} trades evaluated",
+    "cumulativeChart": "Cumulative Performance",
+    "sp500Comparison": "S&P 500",
+    "upgradeForTimeframes": "Upgrade to unlock more timeframes",
+    "upgradeForChart": "Upgrade to view price chart",
+    "upgradeForSP500": "Upgrade to Premium to compare with S&P 500",
+    "upgradeForCumulative": "Upgrade to Premium to view cumulative performance",
+    "upgradeForAlpha": "Upgrade to Premium to view alpha",
+    "disclaimer": "Prices sourced from Yahoo Finance. Past performance does not guarantee future results. This is not financial advice.",
+    "disclaimerEstimated": "Some trade dates are estimated from disclosure dates and may not reflect actual execution date.",
+    "filterBuys": "Buys",
+    "filterSells": "Sells",
+    "filterAll": "All trades"
+  },
   "valueProps": {
     "eyebrow": "Why PolitiTrades",
     "title": "The edge you've been missing",
@@ -105,7 +147,7 @@
     "features": {
       "realtime": {
         "title": "Real-time tracking",
-        "description": "Trades appear within minutes of official filing. Set alerts for specific politicians or stocks."
+        "description": "Trades appear within minutes of official filing. Follow specific politicians or stocks."
       },
       "official": {
         "title": "Official sources only",
@@ -118,10 +160,6 @@
       "follow": {
         "title": "Follow politicians",
         "description": "Build watchlists. Get notified when your tracked members disclose new trades."
-      },
-      "alerts": {
-        "title": "Custom alerts",
-        "description": "Email, SMS, or push notifications. Filter by stock, sector, trade size, or party."
       },
       "history": {
         "title": "Historical data",
@@ -152,8 +190,7 @@
         "locked": [
           "Watchlist",
           "Advanced filters",
-          "CSV export",
-          "Custom alerts"
+          "CSV export"
         ]
       },
       "account": {
@@ -171,7 +208,6 @@
         ],
         "locked": [
           "CSV export",
-          "Custom alerts",
           "Real-time data"
         ]
       },
@@ -187,7 +223,6 @@
           "Unlimited history",
           "Advanced filters (amount, party, sector)",
           "CSV export",
-          "Custom alerts",
           "Unlimited watchlists"
         ]
       }
@@ -199,12 +234,10 @@
       { "feature": "History", "guest": "—", "account": "6 months", "premium": "Unlimited" },
       { "feature": "Watchlist", "guest": "—", "account": "5 max", "premium": "Unlimited" },
       { "feature": "Filters", "guest": "—", "account": "Basic", "premium": "Advanced" },
-      { "feature": "CSV export", "guest": "—", "account": "—", "premium": "✓" },
-      { "feature": "Custom alerts", "guest": "—", "account": "—", "premium": "✓" }
+      { "feature": "CSV export", "guest": "—", "account": "—", "premium": "✓" }
     ],
     "tooltips": {
       "exportCsv": "Export your data as CSV for your own analysis",
-      "alertes": "Get notified by email or push as soon as a trade is disclosed",
       "filtresAvances": "Filter by amount, political party, sector, transaction type"
     }
   },
@@ -232,7 +265,7 @@
     },
     "stats": {
       "accuracy": "Data accuracy",
-      "filingToAlert": "Filing to alert",
+      "filingToFeed": "Filing to feed",
       "historicalData": "Historical data",
       "membersTracked": "Members tracked"
     }
@@ -259,7 +292,7 @@
       },
       {
         "q": "What's included in Pro?",
-        "a": "Pro includes real-time alerts via email and push, unlimited politician tracking, full historical data back to 2012, performance analytics comparing returns to benchmarks, and API access for building your own tools."
+        "a": "Pro includes real-time data, unlimited politician tracking, full historical data back to 2012, performance analytics comparing returns to benchmarks, and API access for building your own tools."
       },
       {
         "q": "Can I cancel anytime?",
@@ -293,7 +326,6 @@
       "feed": "Live Feed",
       "politicians": "Politicians",
       "watchlist": "Watchlist",
-      "alerts": "Alerts",
       "settings": "Settings",
       "admin": "Admin"
     },
@@ -303,7 +335,6 @@
       "todayTrades": "Today's Trades",
       "activeMembers": "Active Members",
       "totalVolume": "Total Volume",
-      "yourAlerts": "Your Alerts",
       "recentTrades": "Recent Trades",
       "topTraders": "Top Traders",
       "trendingStocks": "Trending Stocks"
@@ -333,8 +364,7 @@
       "noRecentActivity": "No recent activity from your watchlist",
       "quickStats": "Quick Stats",
       "totalWatched": "Total watched",
-      "tradesThisWeek": "Trades this week",
-      "alertsActive": "Alerts active"
+      "tradesThisWeek": "Trades this week"
     },
     "settings": {
       "title": "Settings",
@@ -345,7 +375,7 @@
       "dangerZone": "Danger zone",
       "deleteAccount": "Delete my account",
       "deleteConfirmTitle": "Delete your account?",
-      "deleteConfirmDescription": "This action is irreversible. All your data, watchlists, and alerts will be permanently deleted.",
+      "deleteConfirmDescription": "This action is irreversible. All your data and watchlists will be permanently deleted.",
       "deleteConfirmAction": "Confirm deletion",
       "deleting": "Deleting...",
       "cancel": "Cancel"

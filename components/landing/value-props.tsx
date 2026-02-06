@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BarChart3, Shield, Clock, Users, FileText } from "lucide-react";
+import { BarChart3, Shield, Clock, Users, FileText } from "lucide-react";
 import { useTranslations } from "@/lib/i18n-context";
 import {
   m,
@@ -16,7 +16,6 @@ const featureKeys = [
   { icon: FileText, key: "official" },
   { icon: BarChart3, key: "analytics" },
   { icon: Users, key: "follow" },
-  { icon: Bell, key: "alerts" },
   { icon: Shield, key: "history" },
 ];
 

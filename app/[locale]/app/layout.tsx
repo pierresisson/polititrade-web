@@ -1,16 +1,31 @@
 import { AppSidebar } from "@/components/app/sidebar";
 import { AppHeader } from "@/components/app/header";
-import { CommandPalette } from "@/components/command-palette";
+import { LazyCommandPalette } from "@/components/lazy-command-palette";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Fetch user + admin status server-side (shared with sidebar)
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+    isAdmin = profile?.is_admin === true;
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <AppSidebar />
+      <AppSidebar user={user} isAdmin={isAdmin} />
 
       {/* Main content */}
       <div className="flex flex-1 flex-col">
@@ -20,7 +35,7 @@ export default function AppLayout({
         </main>
       </div>
 
-      <CommandPalette />
+      <LazyCommandPalette />
     </div>
   );
 }
