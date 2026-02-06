@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, TrendingUp, ArrowRight } from "lucide-react";
+import { User, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
   navigationItems,
@@ -21,6 +21,10 @@ import {
 } from "@/components/ui/command";
 
 const DEBOUNCE_MS = 250;
+
+function matchesQuery(label: string, q: string) {
+  return label.toLowerCase().includes(q.toLowerCase());
+}
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -105,11 +109,29 @@ export function CommandPalette() {
     [router, localePath]
   );
 
+  // Local filtering — we handle it ourselves, cmdk shouldFilter={false}
+  const filteredNav = useMemo(() => {
+    if (!query) return navigationItems;
+    return navigationItems.filter((item) =>
+      matchesQuery(t(`app.nav.${item.labelKey}`), query)
+    );
+  }, [query, t]);
+
+  const filteredActions = useMemo(() => {
+    if (!query) return actionItems;
+    return actionItems.filter((item) =>
+      matchesQuery(t(`app.commandPalette.${item.labelKey}`), query)
+    );
+  }, [query, t]);
+
   const personResults = results.filter((r) => r.type === "person");
   const assetResults = results.filter((r) => r.type === "asset");
   const tradeResults = results.filter((r) => r.type === "trade");
   const hasRemoteResults =
     personResults.length > 0 || assetResults.length > 0 || tradeResults.length > 0;
+
+  const hasAnyResults =
+    filteredNav.length > 0 || filteredActions.length > 0 || hasRemoteResults;
 
   return (
     <CommandDialog
@@ -118,34 +140,42 @@ export function CommandPalette() {
       title={t("app.commandPalette.title")}
       description={t("app.commandPalette.description")}
     >
-      <Command shouldFilter={!query || query.length < 2}>
+      <Command shouldFilter={false}>
         <CommandInput
           placeholder={t("app.commandPalette.placeholder")}
           value={query}
           onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty>
-            {loading
-              ? t("app.commandPalette.searching")
-              : t("app.commandPalette.noResults")}
-          </CommandEmpty>
+          {/* Loading indicator */}
+          {loading && (
+            <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("app.commandPalette.searching")}
+            </div>
+          )}
+
+          {/* Empty state — only when not loading and nothing matches */}
+          {!loading && !hasAnyResults && query.length > 0 && (
+            <CommandEmpty>{t("app.commandPalette.noResults")}</CommandEmpty>
+          )}
 
           {/* Navigation */}
-          <CommandGroup heading={t("app.commandPalette.navigation")}>
-            {navigationItems.map((item) => (
-              <CommandItem
-                key={item.labelKey}
-                value={t(`app.nav.${item.labelKey}`)}
-                onSelect={() => navigate(item.href)}
-              >
-                <item.icon className="h-4 w-4 text-muted-foreground" />
-                <span>{t(`app.nav.${item.labelKey}`)}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {filteredNav.length > 0 && (
+            <CommandGroup heading={t("app.commandPalette.navigation")}>
+              {filteredNav.map((item) => (
+                <CommandItem
+                  key={item.labelKey}
+                  onSelect={() => navigate(item.href)}
+                >
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                  <span>{t(`app.nav.${item.labelKey}`)}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
 
-          {/* Remote results */}
+          {/* Remote results — politicians, assets, trades */}
           {hasRemoteResults && (
             <>
               <CommandSeparator />
@@ -153,7 +183,6 @@ export function CommandPalette() {
                 {personResults.map((r) => (
                   <CommandItem
                     key={r.id}
-                    value={r.title}
                     onSelect={() => navigate(r.href)}
                   >
                     <User className="h-4 w-4 text-muted-foreground" />
@@ -170,7 +199,6 @@ export function CommandPalette() {
                 {assetResults.map((r) => (
                   <CommandItem
                     key={r.id}
-                    value={`${r.title} ${r.subtitle ?? ""}`}
                     onSelect={() => navigate(r.href)}
                   >
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -187,7 +215,6 @@ export function CommandPalette() {
                 {tradeResults.map((r) => (
                   <CommandItem
                     key={r.id}
-                    value={r.title}
                     onSelect={() => navigate(r.href)}
                   >
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
@@ -206,19 +233,22 @@ export function CommandPalette() {
           )}
 
           {/* Actions */}
-          <CommandSeparator />
-          <CommandGroup heading={t("app.commandPalette.actions")}>
-            {actionItems.map((item) => (
-              <CommandItem
-                key={item.labelKey}
-                value={t(`app.commandPalette.${item.labelKey}`)}
-                onSelect={() => navigate(item.href)}
-              >
-                <item.icon className="h-4 w-4 text-muted-foreground" />
-                <span>{t(`app.commandPalette.${item.labelKey}`)}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {filteredActions.length > 0 && (
+            <>
+              <CommandSeparator />
+              <CommandGroup heading={t("app.commandPalette.actions")}>
+                {filteredActions.map((item) => (
+                  <CommandItem
+                    key={item.labelKey}
+                    onSelect={() => navigate(item.href)}
+                  >
+                    <item.icon className="h-4 w-4 text-muted-foreground" />
+                    <span>{t(`app.commandPalette.${item.labelKey}`)}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
         </CommandList>
       </Command>
     </CommandDialog>
