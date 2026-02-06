@@ -4,32 +4,29 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { transactions } from "@/lib/mock-data";
+import { formatAmountRange, formatDate } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import type { TradeType } from "@/lib/mock-data";
+import type { TradeWithPolitician } from "@/lib/supabase/types";
+
+type TradeType = "buy" | "sell" | "all";
 
 type Props = {
-  politicianId: string;
+  trades: TradeWithPolitician[];
 };
 
-export function PoliticianTransactions({ politicianId }: Props) {
+export function PoliticianTransactions({ trades }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
-  const [filter, setFilter] = useState<TradeType | "all">("all");
-
-  // Get transactions for this politician
-  const politicianTransactions = transactions.filter(
-    (t) => t.politicianId === politicianId
-  );
+  const [filter, setFilter] = useState<TradeType>("all");
 
   // Apply type filter
   const filteredTransactions =
     filter === "all"
-      ? politicianTransactions
-      : politicianTransactions.filter((tx) => tx.type === filter);
+      ? trades
+      : trades.filter((tx) => tx.trade_type === filter);
 
   // If no transactions, show message
-  if (politicianTransactions.length === 0) {
+  if (trades.length === 0) {
     return (
       <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
         <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -53,7 +50,7 @@ export function PoliticianTransactions({ politicianId }: Props) {
             {t("politicianDetail.recentTransactions")}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {politicianTransactions.length} {t("politicianDetail.tradesInLast12Months")}
+            {trades.length} {t("politicianDetail.tradesInLast12Months")}
           </p>
         </div>
 
@@ -121,35 +118,37 @@ export function PoliticianTransactions({ politicianId }: Props) {
                 className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
               >
                 <td className="py-4">
-                  <Link href={localePath(`/stock/${tx.stock}`)} className="block">
+                  <Link href={localePath(`/stock/${tx.ticker ?? ""}`)} className="block">
                     <span className="font-mono text-lg font-semibold group-hover:text-primary">
-                      {tx.stock}
+                      {tx.ticker ?? "—"}
                     </span>
-                    <p className="text-sm text-muted-foreground">{tx.company}</p>
+                    <p className="text-sm text-muted-foreground">{tx.asset_name ?? ""}</p>
                   </Link>
                 </td>
                 <td className="py-4">
                   <span
                     className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-sm font-medium ${
-                      tx.type === "buy"
+                      tx.trade_type === "buy"
                         ? "bg-success-light text-success"
-                        : "bg-destructive/10 text-destructive"
+                        : tx.trade_type === "sell"
+                        ? "bg-destructive/10 text-destructive"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {tx.type === "buy" ? (
+                    {tx.trade_type === "buy" ? (
                       <ArrowUpRight className="h-3.5 w-3.5" />
-                    ) : (
+                    ) : tx.trade_type === "sell" ? (
                       <ArrowDownRight className="h-3.5 w-3.5" />
-                    )}
-                    {tx.type === "buy" ? t("liveFeed.buy") : t("liveFeed.sell")}
+                    ) : null}
+                    {tx.trade_type === "buy" ? t("liveFeed.buy") : tx.trade_type === "sell" ? t("liveFeed.sell") : tx.trade_type ?? "—"}
                   </span>
                 </td>
                 <td className="py-4">
-                  <span className="font-mono">{tx.amount}</span>
+                  <span className="font-mono">{formatAmountRange(tx.amount_min, tx.amount_max)}</span>
                 </td>
-                <td className="py-4 text-muted-foreground">{tx.date}</td>
+                <td className="py-4 text-muted-foreground">{formatDate(tx.trade_date)}</td>
                 <td className="py-4 text-right text-sm text-muted-foreground">
-                  {tx.filedDate}
+                  {formatDate(tx.disclosure_date)}
                 </td>
               </tr>
             ))}

@@ -5,14 +5,19 @@ import Link from "next/link";
 import { Search, ArrowUpDown, Grid3X3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { politicians, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import type { Party, Chamber } from "@/lib/mock-data";
+import type { PoliticianWithStats } from "@/lib/supabase/types";
+import type { Party, Chamber } from "@/lib/supabase/types";
 
-type SortKey = "name" | "trades" | "volume" | "returnYTD";
+type SortKey = "name" | "trades" | "volume";
 type ViewMode = "grid" | "table";
 
-export function PoliticiansList() {
+type Props = {
+  politicians: PoliticianWithStats[];
+};
+
+export function PoliticiansList({ politicians }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [search, setSearch] = useState("");
@@ -31,8 +36,8 @@ export function PoliticiansList() {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(searchLower) ||
-          p.state.toLowerCase().includes(searchLower) ||
-          p.topHolding.toLowerCase().includes(searchLower)
+          (p.state?.toLowerCase().includes(searchLower) ?? false) ||
+          (p.top_ticker?.toLowerCase().includes(searchLower) ?? false)
       );
     }
 
@@ -54,20 +59,17 @@ export function PoliticiansList() {
           comparison = a.name.localeCompare(b.name);
           break;
         case "trades":
-          comparison = a.trades - b.trades;
+          comparison = a.trade_count - b.trade_count;
           break;
         case "volume":
-          comparison = parseFloat(a.volume.replace(/[$M,K]/g, "")) - parseFloat(b.volume.replace(/[$M,K]/g, ""));
-          break;
-        case "returnYTD":
-          comparison = parseFloat(a.returnYTD) - parseFloat(b.returnYTD);
+          comparison = a.volume - b.volume;
           break;
       }
       return sortDesc ? -comparison : comparison;
     });
 
     return result;
-  }, [search, partyFilter, chamberFilter, sortBy, sortDesc]);
+  }, [politicians, search, partyFilter, chamberFilter, sortBy, sortDesc]);
 
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {
@@ -224,31 +226,27 @@ export function PoliticiansList() {
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 <span className={getPartyColor(p.party)}>
-                  {p.party === "D" ? t("politicians.democrat") : t("politicians.republican")}
+                  {p.party === "D" ? t("politicians.democrat") : p.party === "R" ? t("politicians.republican") : "Ind"}
                 </span>
                 {" · "}
-                {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
                 {" · "}
-                {p.state}
+                {p.state ?? ""}
               </p>
 
               {/* Stats */}
               <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
                 <div>
                   <p className="text-xs text-muted-foreground">{t("politicians.trades")}</p>
-                  <p className="font-display text-xl font-semibold">{p.trades}</p>
+                  <p className="font-display text-xl font-semibold">{p.trade_count}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{t("politicians.volume")}</p>
-                  <p className="font-display text-xl font-semibold">{p.volume}</p>
+                  <p className="font-display text-xl font-semibold">{formatVolume(p.volume)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{t("politicians.topHolding")}</p>
-                  <p className="font-mono font-semibold">{p.topHolding}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("politicians.returnYTD")}</p>
-                  <p className="font-display font-semibold text-success">{p.returnYTD}</p>
+                  <p className="font-mono font-semibold">{p.top_ticker ?? "—"}</p>
                 </div>
               </div>
             </Link>
@@ -298,15 +296,6 @@ export function PoliticiansList() {
                 <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wider">
                   {t("politicians.topHolding")}
                 </th>
-                <th className="pb-3 text-right text-xs font-semibold uppercase tracking-wider">
-                  <button
-                    onClick={() => handleSort("returnYTD")}
-                    className="inline-flex items-center gap-1 hover:text-primary"
-                  >
-                    {t("politicians.returnYTD")}
-                    <ArrowUpDown className="h-3 w-3" />
-                  </button>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -327,7 +316,7 @@ export function PoliticiansList() {
                       </div>
                       <div>
                         <p className="font-medium group-hover:text-primary">{p.name}</p>
-                        <p className="text-xs text-muted-foreground">{p.state}</p>
+                        <p className="text-xs text-muted-foreground">{p.state ?? ""}</p>
                       </div>
                     </Link>
                   </td>
@@ -336,21 +325,20 @@ export function PoliticiansList() {
                       className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${
                         p.party === "D"
                           ? "bg-blue-100 text-blue-700"
-                          : "bg-red-100 text-red-700"
+                          : p.party === "R"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {p.party === "D" ? t("politicians.dem") : t("politicians.rep")}
+                      {p.party === "D" ? t("politicians.dem") : p.party === "R" ? t("politicians.rep") : "Ind"}
                     </span>
                   </td>
                   <td className="py-4 text-sm text-muted-foreground">
-                    {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                    {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
                   </td>
-                  <td className="py-4 text-right font-display font-semibold">{p.trades}</td>
-                  <td className="py-4 text-right font-mono">{p.volume}</td>
-                  <td className="py-4 font-mono font-semibold">{p.topHolding}</td>
-                  <td className="py-4 text-right font-display font-semibold text-success">
-                    {p.returnYTD}
-                  </td>
+                  <td className="py-4 text-right font-display font-semibold">{p.trade_count}</td>
+                  <td className="py-4 text-right font-mono">{formatVolume(p.volume)}</td>
+                  <td className="py-4 font-mono font-semibold">{p.top_ticker ?? "—"}</td>
                 </tr>
               ))}
             </tbody>

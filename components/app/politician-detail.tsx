@@ -2,53 +2,45 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ArrowDownRight, Star, Bell, ExternalLink, TrendingUp, DollarSign, BarChart3, Briefcase } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ArrowDownRight, Star, Bell, ExternalLink, DollarSign, BarChart3, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { transactions, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor, formatAmountRange, formatDate, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import type { Politician, TradeType } from "@/lib/mock-data";
+import type { PoliticianWithStats, TradeWithPolitician } from "@/lib/supabase/types";
+
+type TradeFilter = "buy" | "sell" | "all";
 
 type Props = {
-  politician: Politician;
+  politician: PoliticianWithStats;
+  trades: TradeWithPolitician[];
 };
 
-export function AppPoliticianDetail({ politician }: Props) {
+export function AppPoliticianDetail({ politician, trades }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
-  const [filter, setFilter] = useState<TradeType | "all">("all");
-
-  const politicianTransactions = transactions.filter(
-    (tx) => tx.politicianId === politician.id
-  );
+  const [filter, setFilter] = useState<TradeFilter>("all");
 
   const filteredTransactions =
     filter === "all"
-      ? politicianTransactions
-      : politicianTransactions.filter((tx) => tx.type === filter);
+      ? trades
+      : trades.filter((tx) => tx.trade_type === filter);
 
   const stats = [
     {
       label: t("politicianDetail.totalTrades"),
-      value: politician.trades.toString(),
+      value: politician.trade_count.toString(),
       subtext: t("politicianDetail.last12Months"),
       icon: BarChart3,
     },
     {
       label: t("politicianDetail.tradingVolume"),
-      value: politician.volume,
+      value: formatVolume(politician.volume),
       subtext: t("politicianDetail.disclosedAmount"),
       icon: DollarSign,
     },
     {
-      label: t("politicians.returnYTD"),
-      value: politician.returnYTD,
-      subtext: t("politicianDetail.basedOnTrades"),
-      icon: TrendingUp,
-      highlight: true,
-    },
-    {
       label: t("politicians.topHolding"),
-      value: politician.topHolding,
+      value: politician.top_ticker ?? "—",
       subtext: t("politicianDetail.mostTradedStock"),
       icon: Briefcase,
       mono: true,
@@ -84,15 +76,17 @@ export function AppPoliticianDetail({ politician }: Props) {
                 className={`inline-block rounded px-2.5 py-1 text-sm font-medium ${
                   politician.party === "D"
                     ? "bg-blue-100 text-blue-700"
-                    : "bg-red-100 text-red-700"
+                    : politician.party === "R"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
-                {politician.party === "D" ? t("politicians.democrat") : t("politicians.republican")}
+                {politician.party === "D" ? t("politicians.democrat") : politician.party === "R" ? t("politicians.republican") : "Independent"}
               </span>
               <span className="text-muted-foreground">
-                {politician.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                {politician.chamber === "House" ? t("politicians.house") : politician.chamber === "Senate" ? t("politicians.senate") : "—"}
               </span>
-              <span className="text-muted-foreground">{politician.state}</span>
+              <span className="text-muted-foreground">{politician.state ?? ""}</span>
             </div>
           </div>
         </div>
@@ -114,7 +108,7 @@ export function AppPoliticianDetail({ politician }: Props) {
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div
             key={stat.label}
@@ -125,9 +119,7 @@ export function AppPoliticianDetail({ politician }: Props) {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </div>
             <p
-              className={`mt-2 text-3xl font-semibold ${
-                stat.highlight ? "text-success" : ""
-              } ${stat.mono ? "font-mono" : "font-display"}`}
+              className={`mt-2 text-3xl font-semibold ${stat.mono ? "font-mono" : "font-display"}`}
             >
               {stat.value}
             </p>
@@ -144,7 +136,7 @@ export function AppPoliticianDetail({ politician }: Props) {
               {t("politicianDetail.recentTransactions")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {politicianTransactions.length} {t("politicianDetail.tradesInLast12Months")}
+              {trades.length} {t("politicianDetail.tradesInLast12Months")}
             </p>
           </div>
 
@@ -212,32 +204,34 @@ export function AppPoliticianDetail({ politician }: Props) {
                   >
                     <td className="px-4 py-4">
                       <span className="font-mono text-lg font-semibold">
-                        {tx.stock}
+                        {tx.ticker ?? "—"}
                       </span>
-                      <p className="text-sm text-muted-foreground">{tx.company}</p>
+                      <p className="text-sm text-muted-foreground">{tx.asset_name ?? ""}</p>
                     </td>
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-sm font-medium ${
-                          tx.type === "buy"
+                          tx.trade_type === "buy"
                             ? "bg-success/10 text-success"
-                            : "bg-destructive/10 text-destructive"
+                            : tx.trade_type === "sell"
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
-                        {tx.type === "buy" ? (
+                        {tx.trade_type === "buy" ? (
                           <ArrowUpRight className="h-3.5 w-3.5" />
-                        ) : (
+                        ) : tx.trade_type === "sell" ? (
                           <ArrowDownRight className="h-3.5 w-3.5" />
-                        )}
-                        {tx.type === "buy" ? t("liveFeed.buy") : t("liveFeed.sell")}
+                        ) : null}
+                        {tx.trade_type === "buy" ? t("liveFeed.buy") : tx.trade_type === "sell" ? t("liveFeed.sell") : tx.trade_type ?? "—"}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="font-mono">{tx.amount}</span>
+                      <span className="font-mono">{formatAmountRange(tx.amount_min, tx.amount_max)}</span>
                     </td>
-                    <td className="px-4 py-4 text-muted-foreground">{tx.date}</td>
+                    <td className="px-4 py-4 text-muted-foreground">{formatDate(tx.trade_date)}</td>
                     <td className="px-4 py-4 text-right text-sm text-muted-foreground">
-                      {tx.filedDate}
+                      {formatDate(tx.disclosure_date)}
                     </td>
                   </tr>
                 ))}
@@ -247,7 +241,7 @@ export function AppPoliticianDetail({ politician }: Props) {
         ) : (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">
-              {politicianTransactions.length === 0
+              {trades.length === 0
                 ? t("politicianDetail.noTransactions")
                 : t("politicianDetail.noFilteredTransactions").replace(
                     "{type}",

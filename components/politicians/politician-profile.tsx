@@ -2,12 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Bell, ExternalLink } from "lucide-react";
-import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/helpers";
 import { useTranslations } from "@/lib/i18n-context";
-import type { Politician } from "@/lib/mock-data";
+import type { PoliticianWithStats } from "@/lib/supabase/types";
 
 type Props = {
-  politician: Politician;
+  politician: PoliticianWithStats;
 };
 
 export function PoliticianProfile({ politician }: Props) {
@@ -36,23 +36,25 @@ export function PoliticianProfile({ politician }: Props) {
                 className={`inline-block rounded px-2.5 py-1 text-sm font-medium ${
                   politician.party === "D"
                     ? "bg-blue-100 text-blue-700"
-                    : "bg-red-100 text-red-700"
+                    : politician.party === "R"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
-                {politician.party === "D" ? t("politicians.democrat") : t("politicians.republican")}
+                {politician.party === "D" ? t("politicians.democrat") : politician.party === "R" ? t("politicians.republican") : "Independent"}
               </span>
               {/* Chamber */}
               <span className="text-muted-foreground">
-                {politician.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                {politician.chamber === "House" ? t("politicians.house") : politician.chamber === "Senate" ? t("politicians.senate") : "—"}
               </span>
               {/* State */}
               <span className="text-muted-foreground">
-                {politician.state}
+                {politician.state ?? ""}
               </span>
             </div>
             <p className="mt-3 text-muted-foreground">
-              {t("politicianDetail.memberOf")} {politician.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
-              {politician.chamber === "House" ? ` · ${politician.state}` : ""}
+              {t("politicianDetail.memberOf")} {politician.chamber === "House" ? t("politicians.house") : politician.chamber === "Senate" ? t("politicians.senate") : "—"}
+              {politician.chamber === "House" && politician.state ? ` · ${politician.state}` : ""}
             </p>
           </div>
         </div>

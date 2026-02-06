@@ -5,22 +5,15 @@ import { PoliticianBackLink } from "@/components/politicians/politician-back-lin
 import { PoliticianProfile } from "@/components/politicians/politician-profile";
 import { PoliticianTransactions } from "@/components/politicians/politician-transactions";
 import { PoliticianStats } from "@/components/politicians/politician-stats";
-import { politicians } from "@/lib/mock-data";
+import { getPoliticianById, getPoliticianTrades } from "@/lib/supabase/queries";
 
 type Props = {
   params: Promise<{ id: string; locale: string }>;
 };
 
-export async function generateStaticParams() {
-  return politicians.flatMap((p) => [
-    { locale: "en", id: p.id },
-    { locale: "fr", id: p.id },
-  ]);
-}
-
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const politician = politicians.find((p) => p.id === id);
+  const politician = await getPoliticianById(id);
 
   if (!politician) {
     return { title: "Politician Not Found | PolitiTrades" };
@@ -28,13 +21,16 @@ export async function generateMetadata({ params }: Props) {
 
   return {
     title: `${politician.name} | PolitiTrades`,
-    description: `Track stock trades from ${politician.name} (${politician.party}-${politician.state}). View trading history, portfolio, and performance.`,
+    description: `Track stock trades from ${politician.name} (${politician.party ?? ""}${politician.state ? `-${politician.state}` : ""}). View trading history, portfolio, and performance.`,
   };
 }
 
 export default async function PoliticianPage({ params }: Props) {
   const { id } = await params;
-  const politician = politicians.find((p) => p.id === id);
+  const [politician, trades] = await Promise.all([
+    getPoliticianById(id),
+    getPoliticianTrades(id),
+  ]);
 
   if (!politician) {
     notFound();
@@ -60,7 +56,7 @@ export default async function PoliticianPage({ params }: Props) {
         <div className="editorial-rule-thin mx-auto max-w-6xl" />
 
         {/* Transactions */}
-        <PoliticianTransactions politicianId={politician.id} />
+        <PoliticianTransactions trades={trades} />
       </main>
       <Footer />
     </div>

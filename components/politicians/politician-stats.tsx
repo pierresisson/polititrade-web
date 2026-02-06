@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, DollarSign, BarChart3, Briefcase } from "lucide-react";
+import { DollarSign, BarChart3, Briefcase } from "lucide-react";
 import {
   Line,
   XAxis,
@@ -11,6 +11,7 @@ import {
   AreaChart,
 } from "recharts";
 import { useTranslations } from "@/lib/i18n-context";
+import { formatVolume } from "@/lib/helpers";
 import {
   ChartContainer,
   ChartTooltipContent,
@@ -18,13 +19,13 @@ import {
   useChart,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { Politician } from "@/lib/mock-data";
+import type { PoliticianWithStats } from "@/lib/supabase/types";
 
 type Props = {
-  politician: Politician;
+  politician: PoliticianWithStats;
 };
 
-// Mock performance data (12 months)
+// Mock performance data (12 months) — no stock price data available yet
 const performanceData = [
   { month: "Jan", politician: 0, sp500: 0 },
   { month: "Feb", politician: 8, sp500: 4 },
@@ -114,26 +115,19 @@ export function PoliticianStats({ politician }: Props) {
   const stats = [
     {
       label: t("politicianDetail.totalTrades"),
-      value: politician.trades.toString(),
+      value: politician.trade_count.toString(),
       subtext: t("politicianDetail.last12Months"),
       icon: BarChart3,
     },
     {
       label: t("politicianDetail.tradingVolume"),
-      value: politician.volume,
+      value: formatVolume(politician.volume),
       subtext: t("politicianDetail.disclosedAmount"),
       icon: DollarSign,
     },
     {
-      label: t("politicians.returnYTD"),
-      value: politician.returnYTD,
-      subtext: t("politicianDetail.basedOnTrades"),
-      icon: TrendingUp,
-      highlight: true,
-    },
-    {
       label: t("politicians.topHolding"),
-      value: politician.topHolding,
+      value: politician.top_ticker ?? "—",
       subtext: t("politicianDetail.mostTradedStock"),
       icon: Briefcase,
       mono: true,
@@ -146,7 +140,7 @@ export function PoliticianStats({ politician }: Props) {
         {t("politicianDetail.tradingOverview")}
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div
             key={stat.label}
@@ -157,9 +151,7 @@ export function PoliticianStats({ politician }: Props) {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </div>
             <p
-              className={`mt-2 text-3xl font-semibold ${
-                stat.highlight ? "text-success" : ""
-              } ${stat.mono ? "font-mono" : "font-display"}`}
+              className={`mt-2 text-3xl font-semibold ${stat.mono ? "font-mono" : "font-display"}`}
             >
               {stat.value}
             </p>

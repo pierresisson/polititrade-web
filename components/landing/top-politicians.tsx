@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { politicians, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
+import type { PoliticianWithStats } from "@/lib/supabase/types";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
   m,
@@ -12,7 +13,11 @@ import {
   useIsReducedMotion,
 } from "./motion";
 
-export function TopPoliticians() {
+type Props = {
+  politicians: PoliticianWithStats[];
+};
+
+export function TopPoliticians({ politicians }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const prefersReducedMotion = useIsReducedMotion();
@@ -80,23 +85,23 @@ export function TopPoliticians() {
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   <span className={getPartyColor(p.party)}>
-                    {p.party === "D" ? t("politicians.dem") : t("politicians.rep")}
+                    {p.party === "D" ? t("politicians.dem") : p.party === "R" ? t("politicians.rep") : "Ind"}
                   </span>
                   {" · "}
-                  {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                  {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
                   {" · "}
-                  {p.state}
+                  {p.state ?? ""}
                 </p>
 
                 {/* Stats */}
                 <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
                   <div>
                     <p className="text-xs text-muted-foreground">{t("politicians.trades")}</p>
-                    <p className="font-display text-xl font-semibold">{p.trades}</p>
+                    <p className="font-display text-xl font-semibold">{p.trade_count}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">{t("politicians.volume")}</p>
-                    <p className="font-display text-xl font-semibold">{p.volume}</p>
+                    <p className="font-display text-xl font-semibold">{formatVolume(p.volume)}</p>
                   </div>
                 </div>
               </Link>

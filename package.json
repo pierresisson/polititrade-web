@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "ingest:house-ptr": "bun --env-file=.env.local run scripts/ingest-house-ptr.ts --once"
+    "ingest:house-ptr": "bun --env-file=.env.local run scripts/ingest-house-ptr.ts --once",
+    "reconcile:politicians": "bun --env-file=.env.local run scripts/reconcile-politicians.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

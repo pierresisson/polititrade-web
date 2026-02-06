@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { transactions, getPartyColor } from "@/lib/mock-data";
+import { getPartyColor, formatAmountRange, getDaysAgo } from "@/lib/helpers";
+import type { TradeWithPolitician } from "@/lib/supabase/types";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
   m,
@@ -14,11 +15,15 @@ import {
   useIsReducedMotion,
 } from "./motion";
 
-export function LiveFeed() {
+type Props = {
+  trades: TradeWithPolitician[];
+};
+
+export function LiveFeed({ trades }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [showAll, setShowAll] = useState(false);
-  const displayed = showAll ? transactions : transactions.slice(0, 5);
+  const displayed = showAll ? trades : trades.slice(0, 5);
   const prefersReducedMotion = useIsReducedMotion();
 
   const formatDaysAgo = (days: number) => {
@@ -79,58 +84,64 @@ export function LiveFeed() {
             viewport={{ once: true, margin: "-50px" }}
             variants={staggerFast}
           >
-            {displayed.map((tx) => (
-              <m.tr
-                key={tx.id}
-                className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
-                variants={prefersReducedMotion ? fadeUpReduced : fadeUp}
-              >
-                <td className="py-4">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium group-hover:text-primary">
-                      {tx.politician}
+            {displayed.map((tx) => {
+              const party = tx.politicians?.party ?? null;
+              const state = tx.politicians?.state ?? "";
+              const tradeType = tx.trade_type as "buy" | "sell" | null;
+
+              return (
+                <m.tr
+                  key={tx.id}
+                  className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
+                  variants={prefersReducedMotion ? fadeUpReduced : fadeUp}
+                >
+                  <td className="py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium group-hover:text-primary">
+                        {tx.politicians?.name ?? tx.person_name}
+                      </span>
+                      <span className={`text-xs font-medium ${getPartyColor(party)}`}>
+                        {party ? `${party}-${state}` : state}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4">
+                    <div>
+                      <span className="font-mono font-semibold">{tx.ticker ?? "—"}</span>
+                      <p className="text-sm text-muted-foreground">{tx.asset_name ?? ""}</p>
+                    </div>
+                  </td>
+                  <td className="py-4">
+                    <span
+                      className={`inline-flex items-center gap-1 text-sm font-medium ${
+                        tradeType === "buy" ? "text-success" : tradeType === "sell" ? "text-destructive" : "text-muted-foreground"
+                      }`}
+                    >
+                      {tradeType === "buy" ? (
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      ) : tradeType === "sell" ? (
+                        <ArrowDownRight className="h-3.5 w-3.5" />
+                      ) : null}
+                      {tradeType === "buy" ? t("liveFeed.buy") : tradeType === "sell" ? t("liveFeed.sell") : tx.trade_type ?? "—"}
                     </span>
-                    <span className={`text-xs font-medium ${getPartyColor(tx.party)}`}>
-                      {tx.party}-{tx.state}
+                  </td>
+                  <td className="py-4">
+                    <span className="font-mono text-sm">{formatAmountRange(tx.amount_min, tx.amount_max)}</span>
+                  </td>
+                  <td className="py-4 text-right">
+                    <span className="text-sm text-muted-foreground">
+                      {formatDaysAgo(getDaysAgo(tx.disclosure_date))}
                     </span>
-                  </div>
-                </td>
-                <td className="py-4">
-                  <div>
-                    <span className="font-mono font-semibold">{tx.stock}</span>
-                    <p className="text-sm text-muted-foreground">{tx.company}</p>
-                  </div>
-                </td>
-                <td className="py-4">
-                  <span
-                    className={`inline-flex items-center gap-1 text-sm font-medium ${
-                      tx.type === "buy" ? "text-success" : "text-destructive"
-                    }`}
-                  >
-                    {tx.type === "buy" ? (
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    ) : (
-                      <ArrowDownRight className="h-3.5 w-3.5" />
-                    )}
-                    {tx.type === "buy" ? t("liveFeed.buy") : t("liveFeed.sell")}
-                  </span>
-                </td>
-                <td className="py-4">
-                  <span className="font-mono text-sm">{tx.amount}</span>
-                </td>
-                <td className="py-4 text-right">
-                  <span className="text-sm text-muted-foreground">
-                    {formatDaysAgo(tx.daysAgo)}
-                  </span>
-                </td>
-              </m.tr>
-            ))}
+                  </td>
+                </m.tr>
+              );
+            })}
           </m.tbody>
         </table>
       </div>
 
       {/* Load more */}
-      {!showAll && transactions.length > 5 && (
+      {!showAll && trades.length > 5 && (
         <Reveal>
           <button
             onClick={() => setShowAll(true)}

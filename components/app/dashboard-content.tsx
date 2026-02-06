@@ -2,14 +2,22 @@
 
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight, TrendingUp, Users, Activity, Bell } from "lucide-react";
-import { transactions, politicians, trendingStocks, getPartyColor } from "@/lib/mock-data";
+import { getPartyColor, formatAmountRange, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
+import type { TradeWithPolitician, PoliticianWithStats, TrendingStock, WeeklyStats } from "@/lib/supabase/types";
 
-export function DashboardContent() {
+type Props = {
+  trades: TradeWithPolitician[];
+  politicians: PoliticianWithStats[];
+  trendingStocks: TrendingStock[];
+  stats: WeeklyStats;
+};
+
+export function DashboardContent({ trades, politicians, trendingStocks, stats }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
 
-  const recentTransactions = transactions.slice(0, 5);
+  const recentTransactions = trades.slice(0, 5);
   const topPoliticians = politicians.slice(0, 5);
 
   return (
@@ -31,8 +39,8 @@ export function DashboardContent() {
             <p className="text-sm text-muted-foreground">{t("app.dashboard.todayTrades")}</p>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="mt-2 font-display text-3xl font-semibold">24</p>
-          <p className="mt-1 text-xs text-success">+12% vs yesterday</p>
+          <p className="mt-2 font-display text-3xl font-semibold">{stats.totalTrades}</p>
+          <p className="mt-1 text-xs text-muted-foreground">this week</p>
         </div>
 
         <div className="rounded-lg border border-border bg-card p-5">
@@ -40,7 +48,7 @@ export function DashboardContent() {
             <p className="text-sm text-muted-foreground">{t("app.dashboard.activeMembers")}</p>
             <Users className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="mt-2 font-display text-3xl font-semibold">47</p>
+          <p className="mt-2 font-display text-3xl font-semibold">{stats.activePoliticians}</p>
           <p className="mt-1 text-xs text-muted-foreground">this week</p>
         </div>
 
@@ -49,8 +57,8 @@ export function DashboardContent() {
             <p className="text-sm text-muted-foreground">{t("app.dashboard.totalVolume")}</p>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="mt-2 font-display text-3xl font-semibold">$4.2M</p>
-          <p className="mt-1 text-xs text-success">+8% vs last week</p>
+          <p className="mt-2 font-display text-3xl font-semibold">{stats.totalVolume}</p>
+          <p className="mt-1 text-xs text-muted-foreground">this week</p>
         </div>
 
         <div className="rounded-lg border border-border bg-card p-5">
@@ -58,8 +66,8 @@ export function DashboardContent() {
             <p className="text-sm text-muted-foreground">{t("app.dashboard.yourAlerts")}</p>
             <Bell className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="mt-2 font-display text-3xl font-semibold">3</p>
-          <p className="mt-1 text-xs text-primary">new this week</p>
+          <p className="mt-2 font-display text-3xl font-semibold">0</p>
+          <p className="mt-1 text-xs text-muted-foreground">new this week</p>
         </div>
       </div>
 
@@ -81,26 +89,26 @@ export function DashboardContent() {
                 <div className="flex items-center gap-3">
                   <span
                     className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      tx.type === "buy" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                      tx.trade_type === "buy" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
                     }`}
                   >
-                    {tx.type === "buy" ? (
+                    {tx.trade_type === "buy" ? (
                       <ArrowUpRight className="h-4 w-4" />
                     ) : (
                       <ArrowDownRight className="h-4 w-4" />
                     )}
                   </span>
                   <div>
-                    <p className="font-medium">{tx.politician}</p>
+                    <p className="font-medium">{tx.politicians?.name ?? tx.person_name}</p>
                     <p className="text-sm text-muted-foreground">
-                      <span className="font-mono font-semibold">{tx.stock}</span>
+                      <span className="font-mono font-semibold">{tx.ticker ?? "—"}</span>
                       {" · "}
-                      {tx.amount}
+                      {formatAmountRange(tx.amount_min, tx.amount_max)}
                     </p>
                   </div>
                 </div>
-                <span className={`text-xs font-medium ${getPartyColor(tx.party)}`}>
-                  {tx.party}-{tx.state}
+                <span className={`text-xs font-medium ${getPartyColor(tx.politicians?.party ?? null)}`}>
+                  {tx.politicians?.party ? `${tx.politicians.party}-${tx.politicians.state ?? ""}` : ""}
                 </span>
               </div>
             ))}
@@ -133,15 +141,15 @@ export function DashboardContent() {
                     <p className="font-medium">{p.name}</p>
                     <p className="text-sm text-muted-foreground">
                       <span className={getPartyColor(p.party)}>
-                        {p.party === "D" ? "Dem" : "Rep"}
+                        {p.party === "D" ? "Dem" : p.party === "R" ? "Rep" : "Ind"}
                       </span>
                       {" · "}
-                      {p.chamber}
+                      {p.chamber ?? ""}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-display font-semibold">{p.trades}</p>
+                  <p className="font-display font-semibold">{p.trade_count}</p>
                   <p className="text-xs text-muted-foreground">trades</p>
                 </div>
               </Link>
@@ -157,19 +165,12 @@ export function DashboardContent() {
         </div>
         <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-5">
           {trendingStocks.map((stock) => (
-            <div key={stock.symbol} className="bg-card p-4">
+            <div key={stock.ticker} className="bg-card p-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-lg font-bold">{stock.symbol}</span>
-                <span
-                  className={`font-mono text-sm font-medium ${
-                    stock.trending === "up" ? "text-success" : "text-destructive"
-                  }`}
-                >
-                  {stock.change}
-                </span>
+                <span className="font-mono text-lg font-bold">{stock.ticker}</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                {stock.transactions} trades this week
+                {stock.trade_count} trades this week
               </p>
             </div>
           ))}

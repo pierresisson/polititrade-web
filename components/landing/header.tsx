@@ -18,7 +18,7 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu } from "lucide-react";
 import { useTranslations, useLocalePath, useLocale } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -152,7 +152,10 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                  <Button
+                    variant="ghost"
+                    className="h-auto w-auto rounded-full p-0 hover:bg-transparent"
+                  >
                     <Avatar size="sm">
                       <AvatarImage
                         src={user.user_metadata?.avatar_url}
@@ -160,7 +163,7 @@ export function Header() {
                       />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                  </button>
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
@@ -174,12 +177,23 @@ export function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={localePath("/app")} className="cursor-pointer">
+                      <LayoutDashboard className="mr-2 size-4" />
+                      {t("header.dashboard")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <form action={() => signOut(locale)}>
                     <DropdownMenuItem asChild>
-                      <button type="submit" className="w-full cursor-pointer">
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        className="w-full cursor-pointer justify-start gap-2 border-0 bg-transparent p-0 h-auto font-normal shadow-none hover:bg-transparent"
+                      >
                         <LogOut className="mr-2 size-4" />
                         {t("auth.signOut")}
-                      </button>
+                      </Button>
                     </DropdownMenuItem>
                   </form>
                 </DropdownMenuContent>

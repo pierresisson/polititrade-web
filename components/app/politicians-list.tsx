@@ -5,13 +5,17 @@ import Link from "next/link";
 import { Search, ArrowUpDown, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { politicians, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import type { Party, Chamber } from "@/lib/mock-data";
+import type { PoliticianWithStats, Party, Chamber } from "@/lib/supabase/types";
 
-type SortKey = "name" | "trades" | "volume" | "returnYTD";
+type SortKey = "name" | "trades" | "volume";
 
-export function AppPoliticiansList() {
+type Props = {
+  politicians: PoliticianWithStats[];
+};
+
+export function AppPoliticiansList({ politicians }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [search, setSearch] = useState("");
@@ -28,8 +32,8 @@ export function AppPoliticiansList() {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(searchLower) ||
-          p.state.toLowerCase().includes(searchLower) ||
-          p.topHolding.toLowerCase().includes(searchLower)
+          (p.state?.toLowerCase().includes(searchLower) ?? false) ||
+          (p.top_ticker?.toLowerCase().includes(searchLower) ?? false)
       );
     }
 
@@ -48,20 +52,17 @@ export function AppPoliticiansList() {
           comparison = a.name.localeCompare(b.name);
           break;
         case "trades":
-          comparison = a.trades - b.trades;
+          comparison = a.trade_count - b.trade_count;
           break;
         case "volume":
-          comparison = parseFloat(a.volume.replace(/[$M,K]/g, "")) - parseFloat(b.volume.replace(/[$M,K]/g, ""));
-          break;
-        case "returnYTD":
-          comparison = parseFloat(a.returnYTD) - parseFloat(b.returnYTD);
+          comparison = a.volume - b.volume;
           break;
       }
       return sortDesc ? -comparison : comparison;
     });
 
     return result;
-  }, [search, partyFilter, chamberFilter, sortBy, sortDesc]);
+  }, [politicians, search, partyFilter, chamberFilter, sortBy, sortDesc]);
 
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {
@@ -213,15 +214,6 @@ export function AppPoliticiansList() {
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                   {t("politicians.topHolding")}
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">
-                  <button
-                    onClick={() => handleSort("returnYTD")}
-                    className="inline-flex items-center gap-1 hover:text-primary"
-                  >
-                    {t("politicians.returnYTD")}
-                    <ArrowUpDown className="h-3 w-3" />
-                  </button>
-                </th>
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
                   Watch
                 </th>
@@ -245,7 +237,7 @@ export function AppPoliticiansList() {
                       </div>
                       <div>
                         <p className="font-medium group-hover:text-primary">{p.name}</p>
-                        <p className="text-xs text-muted-foreground">{p.state}</p>
+                        <p className="text-xs text-muted-foreground">{p.state ?? ""}</p>
                       </div>
                     </Link>
                   </td>
@@ -254,21 +246,20 @@ export function AppPoliticiansList() {
                       className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${
                         p.party === "D"
                           ? "bg-blue-100 text-blue-700"
-                          : "bg-red-100 text-red-700"
+                          : p.party === "R"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {p.party === "D" ? t("politicians.dem") : t("politicians.rep")}
+                      {p.party === "D" ? t("politicians.dem") : p.party === "R" ? t("politicians.rep") : "Ind"}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-muted-foreground">
-                    {p.chamber === "House" ? t("politicians.house") : t("politicians.senate")}
+                    {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
                   </td>
-                  <td className="px-4 py-4 text-right font-display font-semibold">{p.trades}</td>
-                  <td className="px-4 py-4 text-right font-mono">{p.volume}</td>
-                  <td className="px-4 py-4 font-mono font-semibold">{p.topHolding}</td>
-                  <td className="px-4 py-4 text-right font-display font-semibold text-success">
-                    {p.returnYTD}
-                  </td>
+                  <td className="px-4 py-4 text-right font-display font-semibold">{p.trade_count}</td>
+                  <td className="px-4 py-4 text-right font-mono">{formatVolume(p.volume)}</td>
+                  <td className="px-4 py-4 font-mono font-semibold">{p.top_ticker ?? "—"}</td>
                   <td className="px-4 py-4 text-center">
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <Star className="h-4 w-4" />

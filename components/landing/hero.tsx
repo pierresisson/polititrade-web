@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { politicians, trendingStocks, getInitials, getPartyColor, getPartyBgColor } from "@/lib/mock-data";
+import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/helpers";
+import type { PoliticianWithStats, TrendingStock } from "@/lib/supabase/types";
 import { HeroIllustration } from "./hero-illustration";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
@@ -16,7 +17,12 @@ import {
   useIsReducedMotion,
 } from "./motion";
 
-export function Hero() {
+type Props = {
+  politicians: PoliticianWithStats[];
+  trendingStocks: TrendingStock[];
+};
+
+export function Hero({ politicians, trendingStocks }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const featuredPoliticians = politicians.slice(0, 4);
@@ -89,7 +95,7 @@ export function Hero() {
                         {politician.name}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        {politician.party === "D" ? "Dem" : "Rep"} · {politician.chamber}
+                        {politician.party === "D" ? "Dem" : politician.party === "R" ? "Rep" : "Ind"} · {politician.chamber ?? ""}
                       </p>
                     </div>
                   </Link>
@@ -142,21 +148,14 @@ export function Hero() {
             {/* Most traded stocks */}
             {trendingStocks.slice(0, 4).map((stock) => (
               <Link
-                key={stock.symbol}
-                href={localePath(`/stock/${stock.symbol}`)}
+                key={stock.ticker}
+                href={localePath(`/stock/${stock.ticker}`)}
                 className="group flex items-center justify-between"
               >
                 <div>
-                  <span className="font-mono text-lg font-bold group-hover:text-primary">{stock.symbol}</span>
-                  <p className="text-xs text-muted-foreground">{stock.transactions} {t("hero.tradesThisWeek")}</p>
+                  <span className="font-mono text-lg font-bold group-hover:text-primary">{stock.ticker}</span>
+                  <p className="text-xs text-muted-foreground">{stock.trade_count} {t("hero.tradesThisWeek")}</p>
                 </div>
-                <span
-                  className={`font-mono text-sm font-medium ${
-                    stock.trending === "up" ? "text-success" : "text-destructive"
-                  }`}
-                >
-                  {stock.change}
-                </span>
               </Link>
             ))}
           </div>

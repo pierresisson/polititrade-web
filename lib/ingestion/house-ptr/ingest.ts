@@ -224,6 +224,74 @@ export async function ingestHousePTR(options: IngestOptions = {}): Promise<Inges
     }
   }
 
+  // ── Phase 3: Reconcile politicians ──
+  console.log(`\n=== Phase 3: Reconcile Politicians ===`);
+  try {
+    // Get distinct person_name + office from trades that have no politician_id
+    const { data: unlinked } = await supabase
+      .from("trades")
+      .select("person_name, office")
+      .is("politician_id", null)
+      .limit(1000);
+
+    if (unlinked && unlinked.length > 0) {
+      // Deduplicate by person_name
+      const seen = new Set<string>();
+      const unique: { name: string; office: string }[] = [];
+      for (const row of unlinked) {
+        if (!row.person_name || seen.has(row.person_name)) continue;
+        seen.add(row.person_name);
+        unique.push({ name: row.person_name, office: row.office || "" });
+      }
+
+      console.log(`[reconcile] ${unique.length} unlinked politician names found`);
+
+      for (const { name, office } of unique) {
+        // Parse state/district from office (e.g. "GA12" → state "GA", district "12")
+        const stateMatch = office.match(/^([A-Z]{2})(\d+)?$/);
+        const state = stateMatch ? stateMatch[1] : null;
+        const district = stateMatch ? stateMatch[2] || null : null;
+
+        // Upsert politician
+        const { data: politician, error: polError } = await supabase
+          .from("politicians")
+          .upsert(
+            {
+              name,
+              chamber: "House",
+              state,
+              district,
+            },
+            { onConflict: "name,chamber" }
+          )
+          .select("id")
+          .single();
+
+        if (polError) {
+          console.warn(`[reconcile] Failed to upsert politician "${name}":`, polError.message);
+          continue;
+        }
+
+        // Link trades to politician
+        const { error: linkError } = await supabase
+          .from("trades")
+          .update({ politician_id: politician.id })
+          .eq("person_name", name)
+          .is("politician_id", null);
+
+        if (linkError) {
+          console.warn(`[reconcile] Failed to link trades for "${name}":`, linkError.message);
+        } else {
+          console.log(`[reconcile] ${name} (${office}) → linked`);
+        }
+      }
+    } else {
+      console.log(`[reconcile] All trades already linked`);
+    }
+  } catch (err) {
+    console.warn(`[reconcile] Phase 3 failed (non-fatal):`, err);
+  }
+
   // ── Summary ──
   console.log(`\n=== Ingestion Complete ===`);
   console.log(`  Found:      ${stats.found}`);
