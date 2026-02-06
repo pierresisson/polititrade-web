@@ -1,8 +1,7 @@
 "use client";
 
-import { Bell, Search, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { useTranslations } from "@/lib/i18n-context";
 
 export function AppHeader() {
@@ -36,16 +35,6 @@ export function AppHeader() {
             ⌘K
           </kbd>
         </button>
-      </div>
-
-      {/* Right side */}
-      <div className="flex items-center gap-4">
-        <LanguageSwitcher />
-
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
-        </Button>
       </div>
     </header>
   );
