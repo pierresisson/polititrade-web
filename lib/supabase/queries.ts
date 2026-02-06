@@ -95,7 +95,7 @@ export async function getRecentTrades(
     .select(
       "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)"
     )
-    .order("disclosure_date", { ascending: false })
+    .order("trade_date", { ascending: false, nullsFirst: false })
     .limit(limit);
 
   if (error || !data) return [];
@@ -111,15 +111,16 @@ export async function getTrendingStocks(
 ): Promise<TrendingStock[]> {
   const supabase = await createClient();
 
-  // Get trades from last 30 days with tickers
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  // Get trades from last 90 days with tickers (use trade_date since disclosure_date may be null)
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const cutoff = ninetyDaysAgo.toISOString().split("T")[0];
 
   const { data, error } = await supabase
     .from("trades")
     .select("ticker, asset_name")
     .not("ticker", "is", null)
-    .gte("disclosure_date", thirtyDaysAgo.toISOString().split("T")[0]);
+    .gte("trade_date", cutoff);
 
   if (error || !data) return [];
 
@@ -147,14 +148,15 @@ export async function getTrendingStocks(
 export async function getWeeklyStats(): Promise<WeeklyStats> {
   const supabase = await createClient();
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const cutoff = sevenDaysAgo.toISOString().split("T")[0];
+  // Use trade_date as fallback since disclosure_date may be null
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const cutoff = thirtyDaysAgo.toISOString().split("T")[0];
 
   const { data, error } = await supabase
     .from("trades")
     .select("politician_id, amount_min, amount_max")
-    .gte("disclosure_date", cutoff);
+    .gte("trade_date", cutoff);
 
   if (error || !data) {
     return { totalVolume: "$0", totalTrades: 0, activePoliticians: 0 };
@@ -238,7 +240,7 @@ export async function getPoliticianTrades(
       "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)"
     )
     .eq("politician_id", politicianId)
-    .order("disclosure_date", { ascending: false });
+    .order("trade_date", { ascending: false, nullsFirst: false });
 
   if (error || !data) return [];
 
