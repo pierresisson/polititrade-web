@@ -130,52 +130,81 @@
   },
   "pricing": {
     "eyebrow": "Pricing",
-    "title": "Simple, transparent pricing",
-    "subtitle": "Start free. Upgrade when you need real-time alerts and full data access.",
-    "mostPopular": "Most popular",
-    "trialNote": "14-day free trial on Pro. No credit card required. Cancel anytime.",
+    "title": "Choose your access level",
+    "subtitle": "Start for free. Upgrade to Premium for real-time data.",
+    "recommended": "Recommended",
+    "transparency": "Public data • Cited sources • Not financial advice",
+    "compareTitle": "Compare plans in detail",
     "plans": {
-      "free": {
-        "name": "Free",
+      "guest": {
+        "name": "Guest",
+        "tag": "Explore",
         "price": "$0",
-        "description": "Browse and explore",
-        "cta": "Get started",
+        "period": "/ mo",
+        "cta": "Explore for free",
+        "microcopy": "No account required",
         "features": [
-          "View recent transactions",
-          "Basic politician profiles",
-          "30-day historical data",
-          "Weekly email digest"
+          "Limited feed (10 latest trades)",
+          "Top politician profiles",
+          "48h data delay"
+        ],
+        "locked": [
+          "Watchlist",
+          "Advanced filters",
+          "CSV export",
+          "Custom alerts"
         ]
       },
-      "pro": {
-        "name": "Pro",
-        "price": "$19",
-        "period": "/mo",
-        "description": "For active investors",
-        "cta": "Start free trial",
+      "account": {
+        "name": "Account",
+        "tag": "For daily tracking",
+        "price": "$4.99",
+        "period": "/ mo",
+        "cta": "Upgrade to Account",
+        "microcopy": "Cancel anytime",
         "features": [
-          "Everything in Free",
-          "Real-time alerts (email + push)",
-          "Unlimited politician tracking",
-          "Full historical archive",
-          "Performance analytics",
-          "API access"
+          "Expanded feed (100 trades)",
+          "Watchlist (5 max)",
+          "Basic filters",
+          "6-month history"
+        ],
+        "locked": [
+          "CSV export",
+          "Custom alerts",
+          "Real-time data"
         ]
       },
-      "team": {
-        "name": "Team",
-        "price": "$99",
-        "period": "/mo",
-        "description": "For firms and researchers",
-        "cta": "Contact sales",
+      "premium": {
+        "name": "Premium",
+        "tag": "Recommended",
+        "price": "$9.99",
+        "period": "/ mo",
+        "cta": "Go Premium",
+        "microcopy": "The most complete for analysis and action",
         "features": [
-          "Everything in Pro",
-          "5 team seats included",
-          "Bulk data export",
-          "Priority support",
-          "Custom integrations"
+          "Real-time data (< 1h)",
+          "Unlimited history",
+          "Advanced filters (amount, party, sector)",
+          "CSV export",
+          "Custom alerts",
+          "Unlimited watchlists"
         ]
       }
+    },
+    "comparison": [
+      { "feature": "Trade feed", "guest": "10 latest", "account": "100 latest", "premium": "Unlimited" },
+      { "feature": "Politician profiles", "guest": "Top 10", "account": "Top 50", "premium": "All" },
+      { "feature": "Data delay", "guest": "48h", "account": "24h", "premium": "< 1h" },
+      { "feature": "History", "guest": "—", "account": "6 months", "premium": "Unlimited" },
+      { "feature": "Watchlist", "guest": "—", "account": "5 max", "premium": "Unlimited" },
+      { "feature": "Filters", "guest": "—", "account": "Basic", "premium": "Advanced" },
+      { "feature": "CSV export", "guest": "—", "account": "—", "premium": "✓" },
+      { "feature": "Custom alerts", "guest": "—", "account": "—", "premium": "✓" }
+    ],
+    "tooltips": {
+      "exportCsv": "Export your data as CSV for your own analysis",
+      "alertes": "Get notified by email or push as soon as a trade is disclosed",
+      "filtresAvances": "Filter by amount, political party, sector, transaction type"
     }
   },
   "trust": {

@@ -130,52 +130,81 @@
   },
   "pricing": {
     "eyebrow": "Tarifs",
-    "title": "Tarification simple et transparente",
-    "subtitle": "Commencez gratuitement. Passez à la version supérieure quand vous avez besoin d'alertes temps réel et d'un accès complet aux données.",
-    "mostPopular": "Le plus populaire",
-    "trialNote": "Essai gratuit de 14 jours sur Pro. Pas de carte bancaire requise. Annulez à tout moment.",
+    "title": "Choisissez votre niveau d'accès",
+    "subtitle": "Commencez gratuitement. Passez en Premium pour le temps réel.",
+    "recommended": "Recommandé",
+    "transparency": "Données publiques • Sources citées • Pas un conseil financier",
+    "compareTitle": "Comparer les plans en détail",
     "plans": {
-      "free": {
-        "name": "Gratuit",
+      "guest": {
+        "name": "Guest",
+        "tag": "Explorer",
         "price": "0€",
-        "description": "Parcourir et explorer",
-        "cta": "Commencer",
+        "period": "/ mois",
+        "cta": "Explorer gratuitement",
+        "microcopy": "Aucun compte requis",
         "features": [
-          "Voir les transactions récentes",
-          "Profils de base des politiciens",
-          "Historique de 30 jours",
-          "Résumé hebdomadaire par email"
+          "Feed limité (10 derniers trades)",
+          "Profils top politiciens",
+          "Données avec délai de 48h"
+        ],
+        "locked": [
+          "Watchlist",
+          "Filtres avancés",
+          "Export CSV",
+          "Alertes personnalisées"
         ]
       },
-      "pro": {
-        "name": "Pro",
-        "price": "19€",
-        "period": "/mois",
-        "description": "Pour les investisseurs actifs",
-        "cta": "Essai gratuit",
+      "account": {
+        "name": "Account",
+        "tag": "Pour suivre au quotidien",
+        "price": "4,99€",
+        "period": "/ mois",
+        "cta": "Passer à Account",
+        "microcopy": "Annulable à tout moment",
         "features": [
-          "Tout ce qui est dans Gratuit",
-          "Alertes temps réel (email + push)",
-          "Suivi illimité de politiciens",
-          "Archive historique complète",
-          "Analyses de performance",
-          "Accès API"
+          "Feed élargi (100 trades)",
+          "Watchlist (5 max)",
+          "Filtres basiques",
+          "Historique de 6 mois"
+        ],
+        "locked": [
+          "Export CSV",
+          "Alertes personnalisées",
+          "Temps réel"
         ]
       },
-      "team": {
-        "name": "Équipe",
-        "price": "99€",
-        "period": "/mois",
-        "description": "Pour les entreprises et chercheurs",
-        "cta": "Contacter les ventes",
+      "premium": {
+        "name": "Premium",
+        "tag": "Recommandé",
+        "price": "9,99€",
+        "period": "/ mois",
+        "cta": "Passer en Premium",
+        "microcopy": "Le plus complet pour analyser et agir",
         "features": [
-          "Tout ce qui est dans Pro",
-          "5 sièges d'équipe inclus",
-          "Export de données en masse",
-          "Support prioritaire",
-          "Intégrations personnalisées"
+          "Temps réel (< 1h)",
+          "Historique illimité",
+          "Filtres avancés (montant, parti, secteur)",
+          "Export CSV",
+          "Alertes personnalisées",
+          "Watchlists illimitées"
         ]
       }
+    },
+    "comparison": [
+      { "feature": "Feed de trades", "guest": "10 derniers", "account": "100 derniers", "premium": "Illimité" },
+      { "feature": "Profils politiciens", "guest": "Top 10", "account": "Top 50", "premium": "Tous" },
+      { "feature": "Délai des données", "guest": "48h", "account": "24h", "premium": "< 1h" },
+      { "feature": "Historique", "guest": "—", "account": "6 mois", "premium": "Illimité" },
+      { "feature": "Watchlist", "guest": "—", "account": "5 max", "premium": "Illimitée" },
+      { "feature": "Filtres", "guest": "—", "account": "Basiques", "premium": "Avancés" },
+      { "feature": "Export CSV", "guest": "—", "account": "—", "premium": "✓" },
+      { "feature": "Alertes personnalisées", "guest": "—", "account": "—", "premium": "✓" }
+    ],
+    "tooltips": {
+      "exportCsv": "Exportez vos données en CSV pour vos propres analyses",
+      "alertes": "Recevez des notifications par email ou push dès qu'un trade est déclaré",
+      "filtresAvances": "Filtrez par montant, parti politique, secteur d'activité, type de transaction"
     }
   },
   "trust": {
