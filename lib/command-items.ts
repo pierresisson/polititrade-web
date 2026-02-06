@@ -35,15 +35,3 @@ export const navigationItems: CommandNavItem[] = [
   { labelKey: "settings", href: "/app/settings", icon: Settings },
 ];
 
-export interface CommandAction {
-  /** i18n key under app.commandPalette */
-  labelKey: string;
-  href: string;
-  icon: LucideIcon;
-}
-
-/** Quick actions */
-export const actionItems: CommandAction[] = [
-  { labelKey: "goToFeed", href: "/app/feed", icon: Activity },
-  { labelKey: "openSettings", href: "/app/settings", icon: Settings },
-];

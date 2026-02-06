@@ -37,6 +37,17 @@ export async function GET(request: NextRequest) {
       .limit(LIMIT_PER_TYPE),
   ]);
 
+  if (politiciansRes.error || tradesRes.error) {
+    console.error("[search] Supabase errors:", {
+      politicians: politiciansRes.error,
+      trades: tradesRes.error,
+    });
+    return NextResponse.json(
+      { results: [], error: "Search query failed" },
+      { status: 500 }
+    );
+  }
+
   const results: SearchResult[] = [];
 
   if (politiciansRes.data) {

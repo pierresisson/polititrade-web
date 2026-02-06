@@ -2,12 +2,17 @@ import { createClient } from "@supabase/supabase-js";
 import { parseXmlIndex } from "./xml-index";
 import { downloadPDF } from "./download";
 import { parsePTRDocument } from "./parse";
-import { bootstrapHouseSession } from "./session";
 import { fetchRecentPTRs } from "./search";
 import type { IngestOptions, IngestStats, PTRIndexEntry } from "./types";
 
 const SOURCE = "HOUSE_PTR";
 const KNOWN_STREAK_THRESHOLD = 20;
+
+/** Strip characters that PostgreSQL rejects in text/jsonb: null bytes, surrogates, control chars */
+function sanitize(str: string): string {
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uFFFE\uFFFF]|\ud800[\udc00-\udfff]|[\ud800-\udfff]/g, "");
+}
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -54,8 +59,7 @@ export async function ingestHousePTR(options: IngestOptions = {}): Promise<Inges
   if (!skipSearch) {
     console.log(`\n=== Phase 2: Delta Search (last ${lookbackDays} days) ===`);
     try {
-      const session = await bootstrapHouseSession();
-      const recentEntries = await fetchRecentPTRs(session, {
+      const recentEntries = await fetchRecentPTRs({
         lookbackDays,
         maxPages,
         throttleMs,
@@ -146,7 +150,7 @@ export async function ingestHousePTR(options: IngestOptions = {}): Promise<Inges
             filed_at: filedAt,
             content_hash: hash,
             status: "parsed",
-            raw_text: parsed.rawText.substring(0, 50000), // cap raw text
+            raw_text: sanitize(parsed.rawText).substring(0, 50000),
             ingested_at: new Date().toISOString(),
           },
           { onConflict: "source,external_id" }
@@ -173,14 +177,14 @@ export async function ingestHousePTR(options: IngestOptions = {}): Promise<Inges
           source: SOURCE,
           person_name: entry.filerName,
           office: entry.office,
-          asset_name: t.assetName,
+          asset_name: sanitize(t.assetName),
           ticker: t.ticker,
           trade_type: t.tradeType,
           trade_date: t.tradeDate,
           disclosure_date: filedAt,
           amount_min: t.amountMin,
           amount_max: t.amountMax,
-          raw_line: t.rawLine,
+          raw_line: sanitize(t.rawLine),
           source_url: entry.pdfUrl,
         }));
 

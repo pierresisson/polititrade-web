@@ -348,16 +348,16 @@
       "cancel": "Cancel"
     },
     "commandPalette": {
-      "title": "Command Palette",
-      "description": "Search for a command to run...",
-      "placeholder": "Search a politician, stock, sector, page...",
-      "navigation": "Navigation",
-      "results": "Results",
-      "actions": "Actions",
+      "title": "Search",
+      "description": "Search for a senator, congressman, stock, sector…",
+      "placeholder": "Search a senator, congressman, stock, sector…",
+      "idle": "Type a keyword…",
+      "searching": "Searching…",
       "noResults": "No results found.",
-      "searching": "Searching...",
-      "goToFeed": "Go to live feed",
-      "openSettings": "Open settings"
+      "error": "An error occurred. Please try again.",
+      "groupPerson": "Politicians",
+      "groupAsset": "Assets",
+      "groupTrade": "Trades"
     },
     "language": "Language",
     "languages": {

@@ -348,16 +348,16 @@
       "cancel": "Annuler"
     },
     "commandPalette": {
-      "title": "Palette de commandes",
-      "description": "Rechercher une commande...",
-      "placeholder": "Rechercher un \u00e9lu, une action, un secteur, une page\u2026",
-      "navigation": "Navigation",
-      "results": "R\u00e9sultats",
-      "actions": "Actions",
-      "noResults": "Aucun r\u00e9sultat.",
-      "searching": "Recherche...",
-      "goToFeed": "Aller au flux en direct",
-      "openSettings": "Ouvrir les param\u00e8tres"
+      "title": "Recherche",
+      "description": "Rechercher un sénateur, un membre du Congrès, une action, un secteur…",
+      "placeholder": "Rechercher un sénateur, un membre du Congrès, une action, un secteur…",
+      "idle": "Tapez un mot-clé…",
+      "searching": "Recherche…",
+      "noResults": "Aucun résultat.",
+      "error": "Une erreur est survenue. Réessayez.",
+      "groupPerson": "Politiciens",
+      "groupAsset": "Actions",
+      "groupTrade": "Transactions"
     },
     "language": "Langue",
     "languages": {

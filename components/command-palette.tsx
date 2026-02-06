@@ -1,15 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
+import { User, TrendingUp, ArrowRight, Loader2, Search } from "lucide-react";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
-import {
-  navigationItems,
-  actionItems,
-  type SearchResult,
-} from "@/lib/command-items";
-import { politicians } from "@/lib/mock-data";
+import type { SearchResult } from "@/lib/command-items";
 import {
   CommandDialog,
   Command,
@@ -23,15 +18,18 @@ import {
 
 const DEBOUNCE_MS = 250;
 
-function matchesQuery(label: string, q: string) {
-  return label.toLowerCase().includes(q.toLowerCase());
-}
+const iconByType: Record<string, typeof User> = {
+  person: User,
+  asset: TrendingUp,
+  trade: ArrowRight,
+};
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const { t } = useTranslations();
   const localePath = useLocalePath();
@@ -58,6 +56,7 @@ export function CommandPalette() {
       setQuery("");
       setResults([]);
       setLoading(false);
+      setError(false);
     }
   }, [open]);
 
@@ -69,10 +68,12 @@ export function CommandPalette() {
     if (query.length < 2) {
       setResults([]);
       setLoading(false);
+      setError(false);
       return;
     }
 
     setLoading(true);
+    setError(false);
 
     timerRef.current = setTimeout(async () => {
       const controller = new AbortController();
@@ -89,6 +90,7 @@ export function CommandPalette() {
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           setResults([]);
+          setError(true);
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -110,42 +112,13 @@ export function CommandPalette() {
     [router, localePath]
   );
 
-  // Local filtering — we handle it ourselves, cmdk shouldFilter={false}
-  const filteredNav = useMemo(() => {
-    if (!query) return navigationItems;
-    return navigationItems.filter((item) =>
-      matchesQuery(t(`app.nav.${item.labelKey}`), query)
-    );
-  }, [query, t]);
-
-  const filteredActions = useMemo(() => {
-    if (!query) return actionItems;
-    return actionItems.filter((item) =>
-      matchesQuery(t(`app.commandPalette.${item.labelKey}`), query)
-    );
-  }, [query, t]);
-
-  // Local politician search (mock data — same source as the rest of the app)
-  const filteredPoliticians = useMemo(() => {
-    if (!query || query.length < 2) return [];
-    const q = query.toLowerCase();
-    return politicians.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.state.toLowerCase().includes(q) ||
-        p.party.toLowerCase().includes(q)
-    );
-  }, [query]);
-
+  // Group results by type
+  const personResults = results.filter((r) => r.type === "person");
   const assetResults = results.filter((r) => r.type === "asset");
   const tradeResults = results.filter((r) => r.type === "trade");
-  const hasResults =
-    filteredPoliticians.length > 0 ||
-    assetResults.length > 0 ||
-    tradeResults.length > 0;
 
-  const hasAnyResults =
-    filteredNav.length > 0 || filteredActions.length > 0 || hasResults;
+  const hasResults = results.length > 0;
+  const isIdle = query.length < 2 && !loading;
 
   return (
     <CommandDialog
@@ -161,102 +134,62 @@ export function CommandPalette() {
           onValueChange={setQuery}
         />
         <CommandList>
+          {/* Idle state */}
+          {isIdle && (
+            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+              <Search className="h-4 w-4" />
+              {t("app.commandPalette.idle")}
+            </div>
+          )}
+
           {/* Loading indicator */}
           {loading && (
-            <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
               {t("app.commandPalette.searching")}
             </div>
           )}
 
-          {/* Empty state — only when not loading and nothing matches */}
-          {!loading && !hasAnyResults && query.length > 0 && (
+          {/* Error state */}
+          {!loading && error && (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              {t("app.commandPalette.error")}
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!loading && !error && !hasResults && query.length >= 2 && (
             <CommandEmpty>{t("app.commandPalette.noResults")}</CommandEmpty>
           )}
 
-          {/* Navigation */}
-          {filteredNav.length > 0 && (
-            <CommandGroup heading={t("app.commandPalette.navigation")}>
-              {filteredNav.map((item) => (
-                <CommandItem
-                  key={item.labelKey}
-                  onSelect={() => navigate(item.href)}
-                >
-                  <item.icon className="h-4 w-4 text-muted-foreground" />
-                  <span>{t(`app.nav.${item.labelKey}`)}</span>
-                </CommandItem>
+          {/* Results — grouped by type */}
+          {personResults.length > 0 && (
+            <CommandGroup heading={t("app.commandPalette.groupPerson")}>
+              {personResults.map((r) => (
+                <ResultItem key={r.id} result={r} onSelect={navigate} />
               ))}
             </CommandGroup>
           )}
 
-          {/* Results — politicians (local mock) + assets/trades (remote) */}
-          {hasResults && (
+          {assetResults.length > 0 && (
             <>
-              <CommandSeparator />
-              <CommandGroup heading={t("app.commandPalette.results")}>
-                {filteredPoliticians.map((p) => (
-                  <CommandItem
-                    key={p.id}
-                    onSelect={() => navigate(`/app/politician/${p.id}`)}
-                  >
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span>{p.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {p.party} · {p.chamber} · {p.state}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
+              {personResults.length > 0 && <CommandSeparator />}
+              <CommandGroup heading={t("app.commandPalette.groupAsset")}>
                 {assetResults.map((r) => (
-                  <CommandItem
-                    key={r.id}
-                    onSelect={() => navigate(r.href)}
-                  >
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span className="font-medium">{r.title}</span>
-                      {r.subtitle && (
-                        <span className="text-xs text-muted-foreground">
-                          {r.subtitle}
-                        </span>
-                      )}
-                    </div>
-                  </CommandItem>
-                ))}
-                {tradeResults.map((r) => (
-                  <CommandItem
-                    key={r.id}
-                    onSelect={() => navigate(r.href)}
-                  >
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span>{r.title}</span>
-                      {r.subtitle && (
-                        <span className="text-xs text-muted-foreground capitalize">
-                          {r.subtitle}
-                        </span>
-                      )}
-                    </div>
-                  </CommandItem>
+                  <ResultItem key={r.id} result={r} onSelect={navigate} />
                 ))}
               </CommandGroup>
             </>
           )}
 
-          {/* Actions */}
-          {filteredActions.length > 0 && (
+          {tradeResults.length > 0 && (
             <>
-              <CommandSeparator />
-              <CommandGroup heading={t("app.commandPalette.actions")}>
-                {filteredActions.map((item) => (
-                  <CommandItem
-                    key={item.labelKey}
-                    onSelect={() => navigate(item.href)}
-                  >
-                    <item.icon className="h-4 w-4 text-muted-foreground" />
-                    <span>{t(`app.commandPalette.${item.labelKey}`)}</span>
-                  </CommandItem>
+              {(personResults.length > 0 || assetResults.length > 0) && (
+                <CommandSeparator />
+              )}
+              <CommandGroup heading={t("app.commandPalette.groupTrade")}>
+                {tradeResults.map((r) => (
+                  <ResultItem key={r.id} result={r} onSelect={navigate} />
                 ))}
               </CommandGroup>
             </>
@@ -264,5 +197,31 @@ export function CommandPalette() {
         </CommandList>
       </Command>
     </CommandDialog>
+  );
+}
+
+function ResultItem({
+  result,
+  onSelect,
+}: {
+  result: SearchResult;
+  onSelect: (href: string) => void;
+}) {
+  const Icon = iconByType[result.type] ?? ArrowRight;
+
+  return (
+    <CommandItem
+      onSelect={() => result.href && onSelect(result.href)}
+    >
+      <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+      <div className="flex flex-col min-w-0">
+        <span className="truncate">{result.title}</span>
+        {result.subtitle && (
+          <span className="text-xs text-muted-foreground truncate">
+            {result.subtitle}
+          </span>
+        )}
+      </div>
+    </CommandItem>
   );
 }

@@ -76,8 +76,10 @@ function parseMembersXml(xml: string, year: number): PTRIndexEntry[] {
     const block = match[1];
 
     const filingType = extractTag(block, "FilingType");
-    // Only PTR filings (Periodic Transaction Report)
-    if (!filingType || !filingType.toUpperCase().includes("PTR")) continue;
+    // Only PTR filings — XML uses "P" or "PTR" for Periodic Transaction Reports
+    if (!filingType) continue;
+    const ft = filingType.toUpperCase().trim();
+    if (ft !== "P" && !ft.includes("PTR")) continue;
 
     const docId = extractTag(block, "DocID");
     const prefix = extractTag(block, "Prefix") || "";

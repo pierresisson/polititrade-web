@@ -1,24 +1,22 @@
-import type { HouseSession, PTRIndexEntry } from "./types";
+import type { PTRIndexEntry } from "./types";
 
 const USER_AGENT = "PolitiTrades/1.0 (contact@polititrades.com)";
-const SEARCH_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewSearch";
+const SEARCH_URL =
+  "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult";
 
 /**
  * Search for recent PTR filings using the House disclosure search form (Phase 2).
- * Requires a bootstrapped session with anti-forgery token.
+ * The endpoint no longer requires a CSRF token or session cookie.
  */
 export async function fetchRecentPTRs(
-  session: HouseSession,
-  options: { lookbackDays?: number; maxPages?: number; throttleMs?: number } = {}
+  options: {
+    lookbackDays?: number;
+    maxPages?: number;
+    throttleMs?: number;
+  } = {}
 ): Promise<PTRIndexEntry[]> {
-  const { lookbackDays = 14, maxPages = 3, throttleMs = 800 } = options;
-
-  const fromDate = new Date();
-  fromDate.setDate(fromDate.getDate() - lookbackDays);
-  const fromStr = `${String(fromDate.getMonth() + 1).padStart(2, "0")}/${String(fromDate.getDate()).padStart(2, "0")}/${fromDate.getFullYear()}`;
-
-  const toDate = new Date();
-  const toStr = `${String(toDate.getMonth() + 1).padStart(2, "0")}/${String(toDate.getDate()).padStart(2, "0")}/${toDate.getFullYear()}`;
+  const { maxPages = 3, throttleMs = 800 } = options;
+  const year = new Date().getFullYear();
 
   const results: PTRIndexEntry[] = [];
 
@@ -30,15 +28,10 @@ export async function fetchRecentPTRs(
     console.log(`[search] Fetching page ${page}...`);
 
     const body = new URLSearchParams({
-      __RequestVerificationToken: session.token,
-      FilingYear: String(new Date().getFullYear()),
+      LastName: "",
+      FilingYear: String(year),
       State: "",
       District: "",
-      FilingType: "PTR",
-      FromDate: fromStr,
-      ToDate: toStr,
-      LastName: "",
-      Page: String(page),
     });
 
     const response = await fetch(SEARCH_URL, {
@@ -46,7 +39,6 @@ export async function fetchRecentPTRs(
       headers: {
         "User-Agent": USER_AGENT,
         "Content-Type": "application/x-www-form-urlencoded",
-        Cookie: session.cookies,
         Referer: "https://disclosures-clerk.house.gov/FinancialDisclosure",
       },
       body: body.toString(),
@@ -59,7 +51,7 @@ export async function fetchRecentPTRs(
     }
 
     const html = await response.text();
-    const pageResults = parseSearchResults(html);
+    const pageResults = parseSearchResults(html, year);
 
     if (pageResults.length === 0) {
       console.log(`[search] No more results at page ${page}`);
@@ -68,6 +60,9 @@ export async function fetchRecentPTRs(
 
     results.push(...pageResults);
     console.log(`[search] Page ${page}: ${pageResults.length} results`);
+
+    // This endpoint returns all results at once (no pagination), so break after page 1
+    break;
   }
 
   console.log(`[search] Total: ${results.length} PTR entries from search`);
@@ -75,37 +70,39 @@ export async function fetchRecentPTRs(
 }
 
 /** Parse the HTML search results table into PTRIndexEntry[] */
-function parseSearchResults(html: string): PTRIndexEntry[] {
+function parseSearchResults(html: string, defaultYear: number): PTRIndexEntry[] {
   const entries: PTRIndexEntry[] = [];
 
-  // Match table rows with disclosure data
-  // Each result row contains: Name, Office, Year, Filing Type, DocID link
-  const rowRegex = /<tr[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/tr>/g;
+  // Match each <tr role="row"> in the results table
+  const rowRegex = /<tr\s+role="row">([\s\S]*?)<\/tr>/g;
   let match: RegExpExecArray | null;
 
   while ((match = rowRegex.exec(html)) !== null) {
     const row = match[1];
+
+    // Only keep PTR filings
+    if (!/PTR/i.test(row)) continue;
+
     const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((m) =>
       m[1].replace(/<[^>]+>/g, "").trim()
     );
 
     if (cells.length < 4) continue;
 
-    // Extract DocID from link href
+    // Extract DocID from PDF link href (e.g. "public_disc/ptr-pdfs/2026/20033725.pdf")
     const linkMatch = row.match(/href="[^"]*\/(\d+)\.pdf"/i);
     if (!linkMatch) continue;
 
     const docId = linkMatch[1];
     const filerName = cells[0] || "";
     const office = cells[1] || "";
-    const filingYear = parseInt(cells[2], 10) || new Date().getFullYear();
-    const filingDate = cells[3] || "";
+    const filingYear = parseInt(cells[2], 10) || defaultYear;
 
     entries.push({
       docId,
       filerName,
       office,
-      filingDate,
+      filingDate: "",
       filingYear,
       pdfUrl: `https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/${filingYear}/${docId}.pdf`,
     });

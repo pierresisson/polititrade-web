@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "ingest:house-ptr": "bun run scripts/ingest-house-ptr.ts --once"
+    "ingest:house-ptr": "bun --env-file=.env.local run scripts/ingest-house-ptr.ts --once"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
