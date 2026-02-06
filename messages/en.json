@@ -347,6 +347,18 @@
       "deleting": "Deleting...",
       "cancel": "Cancel"
     },
+    "commandPalette": {
+      "title": "Command Palette",
+      "description": "Search for a command to run...",
+      "placeholder": "Search a politician, stock, sector, page...",
+      "navigation": "Navigation",
+      "results": "Results",
+      "actions": "Actions",
+      "noResults": "No results found.",
+      "searching": "Searching...",
+      "goToFeed": "Go to live feed",
+      "openSettings": "Open settings"
+    },
     "language": "Language",
     "languages": {
       "en": "English",

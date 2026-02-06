@@ -346,6 +346,23 @@
       "deleteConfirmAction": "Confirmer la suppression",
       "deleting": "Suppression...",
       "cancel": "Annuler"
+    },
+    "commandPalette": {
+      "title": "Palette de commandes",
+      "description": "Rechercher une commande...",
+      "placeholder": "Rechercher un \u00e9lu, une action, un secteur, une page\u2026",
+      "navigation": "Navigation",
+      "results": "R\u00e9sultats",
+      "actions": "Actions",
+      "noResults": "Aucun r\u00e9sultat.",
+      "searching": "Recherche...",
+      "goToFeed": "Aller au flux en direct",
+      "openSettings": "Ouvrir les param\u00e8tres"
+    },
+    "language": "Langue",
+    "languages": {
+      "en": "English",
+      "fr": "Fran\u00e7ais"
     }
   }
 }

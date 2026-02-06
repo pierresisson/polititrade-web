@@ -13,6 +13,8 @@ import {
   LogOut,
   Trash2,
   ChevronsUpDown,
+  Globe,
+  Check,
 } from "lucide-react";
 import { useTranslations, useLocale, useLocalePath } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -38,6 +43,33 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { User } from "@supabase/supabase-js";
+
+function FlagGB({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h640v480H0z" fill="#012169" />
+      <path d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z" fill="#fff" />
+      <path d="m424 281 216 159v40L369 281h55zm-184 20 6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z" fill="#C8102E" />
+      <path d="M241 0v480h160V0H241zM0 160v160h640V160H0z" fill="#fff" />
+      <path d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z" fill="#C8102E" />
+    </svg>
+  );
+}
+
+function FlagFR({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#002395" d="M0 0h213.3v480H0z" />
+      <path fill="#fff" d="M213.3 0h213.4v480H213.3z" />
+      <path fill="#ED2939" d="M426.7 0H640v480H426.7z" />
+    </svg>
+  );
+}
+
+const languages = [
+  { code: "en", icon: FlagGB },
+  { code: "fr", icon: FlagFR },
+] as const;
 
 const navigation = [
   { key: "dashboard", href: "/app", icon: LayoutDashboard },
@@ -72,6 +104,12 @@ export function AppSidebar() {
       return pathname === fullPath;
     }
     return pathname.startsWith(fullPath);
+  };
+
+  const switchLocale = (newLocale: string) => {
+    const segments = pathname.split("/").filter(Boolean);
+    segments[0] = newLocale;
+    router.push(`/${segments.join("/")}`);
   };
 
   const userInitials = user?.user_metadata?.full_name
@@ -150,6 +188,26 @@ export function AppSidebar() {
                 <Settings className="h-4 w-4" />
                 {t("app.nav.settings")}
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Globe className="h-4 w-4" />
+                  {t("app.language")}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onSelect={() => switchLocale(lang.code)}
+                    >
+                      <lang.icon className="h-4 w-5 rounded-sm" />
+                      {t(`app.languages.${lang.code}`)}
+                      {locale === lang.code && (
+                        <Check className="ml-auto h-4 w-4 text-primary" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => {
