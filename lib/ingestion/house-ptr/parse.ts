@@ -1,4 +1,4 @@
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 import type { ParsedDocument, ParsedTrade } from "./types";
 
 /** Standard PTR amount ranges mapped to min/max cents-free dollar values */
@@ -62,11 +62,13 @@ export async function parsePTRDocument(
   docId: string,
   filerName: string
 ): Promise<ParsedDocument> {
-  const parsed = await pdfParse(pdfBuffer);
-  const rawText = parsed.text;
+  const parser = new PDFParse({ data: new Uint8Array(pdfBuffer) });
+  const textResult = await parser.getText();
+  await parser.destroy();
+  const rawText = textResult.text;
 
   const trades: ParsedTrade[] = [];
-  const lines = rawText.split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = rawText.split("\n").map((l: string) => l.trim()).filter(Boolean);
 
   // Strategy: scan each line for amount range patterns (most reliable anchor)
   // then extract surrounding trade information
@@ -98,7 +100,7 @@ export async function parsePTRDocument(
     const tradeDate = dateMatch ? parseDate(dateMatch[0]) : null;
 
     // Extract asset name - text before the amount range or type indicator
-    let assetName = extractAssetName(line, context);
+    const assetName = extractAssetName(line, context);
 
     trades.push({
       assetName,

@@ -333,6 +333,24 @@
       "totalWatched": "Total watched",
       "tradesThisWeek": "Trades this week",
       "alertsActive": "Alerts active"
+    },
+    "settings": {
+      "title": "Settings",
+      "account": "Account",
+      "email": "Email",
+      "signOut": "Sign out",
+      "dangerZone": "Danger zone",
+      "deleteAccount": "Delete my account",
+      "deleteConfirmTitle": "Delete your account?",
+      "deleteConfirmDescription": "This action is irreversible. All your data, watchlists, and alerts will be permanently deleted.",
+      "deleteConfirmAction": "Confirm deletion",
+      "deleting": "Deleting...",
+      "cancel": "Cancel"
+    },
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "fr": "Fran\u00e7ais"
     }
   }
 }

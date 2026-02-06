@@ -333,6 +333,19 @@
       "totalWatched": "Total suivi",
       "tradesThisWeek": "Trades cette semaine",
       "alertsActive": "Alertes actives"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "account": "Compte",
+      "email": "E-mail",
+      "signOut": "Se déconnecter",
+      "dangerZone": "Zone de danger",
+      "deleteAccount": "Supprimer mon compte",
+      "deleteConfirmTitle": "Supprimer votre compte ?",
+      "deleteConfirmDescription": "Cette action est irréversible. Toutes vos données, watchlists et alertes seront définitivement supprimées.",
+      "deleteConfirmAction": "Confirmer la suppression",
+      "deleting": "Suppression...",
+      "cancel": "Annuler"
     }
   }
 }
