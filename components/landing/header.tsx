@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -25,44 +25,59 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth/actions";
 import type { User } from "@supabase/supabase-js";
 
-const NAV_LINKS = [
+/* ── Nav config ── */
+const NAV_LINKS: { key: string; href: string; isAnchor?: boolean }[] = [
   { key: "header.liveFeed", href: "/app/feed" },
   { key: "header.politicians", href: "/app/politicians" },
   { key: "header.subscribe", href: "#pricing", isAnchor: true },
-] as const;
+];
 
-export function Header() {
-  const { t } = useTranslations();
-  const localePath = useLocalePath();
-  const locale = useLocale();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+/* ── rAF-throttled scroll hook ── */
+function useScrolled() {
+  const [scrolled, setScrolled] = useState(false);
+  const ticking = useRef(false);
 
-  // Scroll detection — passive listener, threshold at 8px
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 8);
-    onScroll();
+    const update = () => {
+      setScrolled(window.scrollY > 0);
+      ticking.current = false;
+    };
+    const onScroll = () => {
+      if (!ticking.current) {
+        ticking.current = true;
+        requestAnimationFrame(update);
+      }
+    };
+    // Check initial state
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Auth state
+  return scrolled;
+}
+
+/* ── Header ── */
+export function Header() {
+  const { t } = useTranslations();
+  const localePath = useLocalePath();
+  const locale = useLocale();
+  const scrolled = useScrolled();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   useEffect(() => {
     const supabase = createClient();
-
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
       setLoading(false);
     });
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -79,50 +94,39 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-50 w-full",
-        // Transition: bg, shadow, border, backdrop — 200ms premium ease
-        "transition-[background-color,box-shadow,border-color,backdrop-filter] duration-200",
-        "ease-[cubic-bezier(0.16,1,0.3,1)]",
+        "transition-[background-color,box-shadow,border-color,backdrop-filter] duration-200 ease-out",
         "motion-reduce:transition-none",
-        // Scrolled = glass blur + hairline + subtle shadow
-        isScrolled
+        scrolled
           ? [
-              "bg-background/80 backdrop-blur-xl",
+              "bg-background/75 backdrop-blur-xl backdrop-saturate-[1.6]",
               "border-b border-border/50",
-              "shadow-[0_1px_2px_0_rgba(0,0,0,0.03),0_1px_6px_-1px_rgba(0,0,0,0.02)]",
-              // Fallback for no backdrop-filter support
+              "shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.02)]",
               "supports-[not(backdrop-filter)]:bg-background",
             ]
           : "bg-transparent border-b border-transparent"
       )}
     >
       <div className="mx-auto max-w-6xl px-6">
-        <div
-          className={cn(
-            "flex items-center justify-between",
-            // Height transition: 64px → 56px
-            "transition-[height] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            "motion-reduce:transition-none",
-            isScrolled ? "h-14" : "h-16"
-          )}
-        >
-          {/* ─── Logo ─── */}
-          <Link
-            href={localePath("/")}
-            className="group shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          >
-            <span
-              className={cn(
-                "font-display font-semibold tracking-tight block",
-                "transition-[font-size] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                "motion-reduce:transition-none",
-                isScrolled ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"
-              )}
+        {/*
+          3-column grid ensures nav is always perfectly centered
+          regardless of logo/actions width difference.
+          [1fr  |  auto  |  1fr]
+           logo    nav    actions
+        */}
+        <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center">
+          {/* ─── Col 1 · Logo (left-aligned) ─── */}
+          <div className="flex items-center">
+            <Link
+              href={localePath("/")}
+              className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              Politi<span className="text-primary">Trades</span>
-            </span>
-          </Link>
+              <span className="font-display text-2xl font-semibold tracking-tight">
+                Politi<span className="text-primary">Trades</span>
+              </span>
+            </Link>
+          </div>
 
-          {/* ─── Desktop nav ─── */}
+          {/* ─── Col 2 · Nav (true center) ─── */}
           <nav
             className="hidden items-center gap-1 md:flex"
             aria-label="Main navigation"
@@ -132,9 +136,8 @@ export function Header() {
                 key={key}
                 href={isAnchor ? href : localePath(href)}
                 className={cn(
-                  "relative px-3 py-1.5 text-sm font-medium",
-                  "text-muted-foreground rounded-md",
-                  "transition-colors duration-150",
+                  "px-3 py-1.5 text-sm font-medium text-muted-foreground",
+                  "rounded-md transition-colors duration-150",
                   "hover:text-foreground hover:bg-foreground/[0.04]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 )}
@@ -144,8 +147,8 @@ export function Header() {
             ))}
           </nav>
 
-          {/* ─── Actions ─── */}
-          <div className="flex items-center gap-2">
+          {/* ─── Col 3 · Actions (right-aligned) ─── */}
+          <div className="flex items-center justify-end gap-2">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -200,7 +203,7 @@ export function Header() {
               </>
             )}
 
-            {/* ─── Mobile burger ─── */}
+            {/* Mobile menu */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button
@@ -215,15 +218,15 @@ export function Header() {
               <SheetContent side="right" className="w-72 p-0">
                 <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <div className="flex h-full flex-col">
-                  {/* Sheet header */}
                   <div className="flex h-16 items-center border-b border-border px-6">
                     <span className="font-display text-xl font-semibold tracking-tight">
                       Politi<span className="text-primary">Trades</span>
                     </span>
                   </div>
-
-                  {/* Sheet nav links */}
-                  <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
+                  <nav
+                    className="flex flex-col gap-1 p-4"
+                    aria-label="Mobile navigation"
+                  >
                     {NAV_LINKS.map(({ key, href, isAnchor }) => (
                       <Link
                         key={key}
@@ -240,8 +243,6 @@ export function Header() {
                       </Link>
                     ))}
                   </nav>
-
-                  {/* Sheet footer — auth actions */}
                   <div className="mt-auto border-t border-border p-4">
                     {user ? (
                       <div className="flex items-center gap-3">
@@ -278,7 +279,10 @@ export function Header() {
                             {loading ? t("auth.signingIn") : t("common.login")}
                           </Button>
                         </form>
-                        <Button className="w-full" onClick={() => setMobileOpen(false)}>
+                        <Button
+                          className="w-full"
+                          onClick={() => setMobileOpen(false)}
+                        >
                           {t("common.subscribe")}
                         </Button>
                       </div>
