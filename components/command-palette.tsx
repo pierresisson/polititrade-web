@@ -9,6 +9,7 @@ import {
   actionItems,
   type SearchResult,
 } from "@/lib/command-items";
+import { politicians } from "@/lib/mock-data";
 import {
   CommandDialog,
   Command,
@@ -124,14 +125,27 @@ export function CommandPalette() {
     );
   }, [query, t]);
 
-  const personResults = results.filter((r) => r.type === "person");
+  // Local politician search (mock data — same source as the rest of the app)
+  const filteredPoliticians = useMemo(() => {
+    if (!query || query.length < 2) return [];
+    const q = query.toLowerCase();
+    return politicians.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.state.toLowerCase().includes(q) ||
+        p.party.toLowerCase().includes(q)
+    );
+  }, [query]);
+
   const assetResults = results.filter((r) => r.type === "asset");
   const tradeResults = results.filter((r) => r.type === "trade");
-  const hasRemoteResults =
-    personResults.length > 0 || assetResults.length > 0 || tradeResults.length > 0;
+  const hasResults =
+    filteredPoliticians.length > 0 ||
+    assetResults.length > 0 ||
+    tradeResults.length > 0;
 
   const hasAnyResults =
-    filteredNav.length > 0 || filteredActions.length > 0 || hasRemoteResults;
+    filteredNav.length > 0 || filteredActions.length > 0 || hasResults;
 
   return (
     <CommandDialog
@@ -175,24 +189,22 @@ export function CommandPalette() {
             </CommandGroup>
           )}
 
-          {/* Remote results — politicians, assets, trades */}
-          {hasRemoteResults && (
+          {/* Results — politicians (local mock) + assets/trades (remote) */}
+          {hasResults && (
             <>
               <CommandSeparator />
               <CommandGroup heading={t("app.commandPalette.results")}>
-                {personResults.map((r) => (
+                {filteredPoliticians.map((p) => (
                   <CommandItem
-                    key={r.id}
-                    onSelect={() => navigate(r.href)}
+                    key={p.id}
+                    onSelect={() => navigate(`/app/politician/${p.id}`)}
                   >
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
-                      <span>{r.title}</span>
-                      {r.subtitle && (
-                        <span className="text-xs text-muted-foreground">
-                          {r.subtitle}
-                        </span>
-                      )}
+                      <span>{p.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {p.party} · {p.chamber} · {p.state}
+                      </span>
                     </div>
                   </CommandItem>
                 ))}

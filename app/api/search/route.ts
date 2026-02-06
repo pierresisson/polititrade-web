@@ -52,6 +52,23 @@ export async function GET(request: NextRequest) {
   }
 
   if (tradesRes.data) {
+    // Deduplicate persons from trades (when politicians table is empty)
+    const seenPersons = new Set<string>();
+    if (!politiciansRes.data?.length) {
+      for (const t of tradesRes.data) {
+        if (t.person_name && !seenPersons.has(t.person_name)) {
+          seenPersons.add(t.person_name);
+          results.push({
+            type: "person",
+            id: `person-${t.person_name}`,
+            title: t.person_name,
+            subtitle: undefined,
+            href: `/app/politicians`,
+          });
+        }
+      }
+    }
+
     // Deduplicate assets by ticker
     const seenTickers = new Set<string>();
     for (const t of tradesRes.data) {
