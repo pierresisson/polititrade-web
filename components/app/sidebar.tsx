@@ -4,11 +4,6 @@ import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
-  Activity,
-  Users,
-  Bell,
-  Star,
   Settings,
   LogOut,
   Trash2,
@@ -19,6 +14,7 @@ import {
 import { useTranslations, useLocale, useLocalePath } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { navigationItems } from "@/lib/command-items";
 import { signOut, deleteAccount } from "@/lib/auth/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -71,13 +67,8 @@ const languages = [
   { code: "fr", icon: FlagFR },
 ] as const;
 
-const navigation = [
-  { key: "dashboard", href: "/app", icon: LayoutDashboard },
-  { key: "feed", href: "/app/feed", icon: Activity },
-  { key: "politicians", href: "/app/politicians", icon: Users },
-  { key: "watchlist", href: "/app/watchlist", icon: Star },
-  { key: "alerts", href: "/app/alerts", icon: Bell },
-];
+/** Sidebar uses the first 5 items (excludes settings — shown in user menu) */
+const navigation = navigationItems.filter((item) => item.labelKey !== "settings");
 
 export function AppSidebar() {
   const { t } = useTranslations();
@@ -136,7 +127,7 @@ export function AppSidebar() {
           const active = isActive(item.href);
           return (
             <Link
-              key={item.key}
+              key={item.labelKey}
               href={localePath(item.href)}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -146,7 +137,7 @@ export function AppSidebar() {
               )}
             >
               <item.icon className="h-5 w-5" />
-              {t(`app.nav.${item.key}`)}
+              {t(`app.nav.${item.labelKey}`)}
             </Link>
           );
         })}
