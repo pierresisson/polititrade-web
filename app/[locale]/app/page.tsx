@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-  const [politicians, trades, trendingStocks, stats] = await Promise.all([
+  const [politicians, { trades }, trendingStocks, stats] = await Promise.all([
     getTopPoliticians(12),
     getRecentTrades(20),
     getTrendingStocks(5),

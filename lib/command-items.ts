@@ -3,7 +3,6 @@ import {
   Activity,
   Users,
   Star,
-  Bell,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -31,7 +30,6 @@ export const navigationItems: CommandNavItem[] = [
   { labelKey: "feed", href: "/app/feed", icon: Activity },
   { labelKey: "politicians", href: "/app/politicians", icon: Users },
   { labelKey: "watchlist", href: "/app/watchlist", icon: Star },
-  { labelKey: "alerts", href: "/app/alerts", icon: Bell },
   { labelKey: "settings", href: "/app/settings", icon: Settings },
 ];
 

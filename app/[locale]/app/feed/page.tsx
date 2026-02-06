@@ -6,8 +6,24 @@ export const metadata = {
   description: "Real-time feed of congressional stock trades.",
 };
 
-export default async function FeedPage() {
-  const trades = await getRecentTrades(50);
+type Props = {
+  searchParams: Promise<{ page?: string }>;
+};
 
-  return <FeedContent trades={trades} />;
+export default async function FeedPage({ searchParams }: Props) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  const perPage = 25;
+  const offset = (currentPage - 1) * perPage;
+  const { trades, total } = await getRecentTrades(perPage, offset);
+  const totalPages = Math.ceil(total / perPage);
+
+  return (
+    <FeedContent
+      trades={trades}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      total={total}
+    />
+  );
 }

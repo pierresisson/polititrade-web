@@ -11,7 +11,7 @@ import { MotionProvider } from "@/components/landing/motion";
 import { getTopPoliticians, getRecentTrades, getTrendingStocks } from "@/lib/supabase/queries";
 
 export default async function LandingPage() {
-  const [politicians, trades, trendingStocks] = await Promise.all([
+  const [politicians, { trades }, trendingStocks] = await Promise.all([
     getTopPoliticians(12),
     getRecentTrades(20),
     getTrendingStocks(5),

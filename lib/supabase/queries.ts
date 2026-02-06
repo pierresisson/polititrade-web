@@ -86,24 +86,28 @@ export async function getTopPoliticians(
 }
 
 export async function getRecentTrades(
-  limit = 20
-): Promise<TradeWithPolitician[]> {
+  limit = 20,
+  offset = 0
+): Promise<{ trades: TradeWithPolitician[]; total: number }> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("trades")
     .select(
-      "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)"
+      "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)",
+      { count: "exact" }
     )
     .order("trade_date", { ascending: false, nullsFirst: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
-  if (error || !data) return [];
+  if (error || !data) return { trades: [], total: 0 };
 
-  return data.map((row) => ({
+  const trades = data.map((row) => ({
     ...row,
     politicians: Array.isArray(row.politicians) ? row.politicians[0] ?? null : row.politicians ?? null,
   })) as TradeWithPolitician[];
+
+  return { trades, total: count ?? 0 };
 }
 
 export async function getTrendingStocks(
@@ -230,22 +234,28 @@ export async function getPoliticianById(
 }
 
 export async function getPoliticianTrades(
-  politicianId: string
-): Promise<TradeWithPolitician[]> {
+  politicianId: string,
+  limit = 20,
+  offset = 0
+): Promise<{ trades: TradeWithPolitician[]; total: number }> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("trades")
     .select(
-      "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)"
+      "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)",
+      { count: "exact" }
     )
     .eq("politician_id", politicianId)
-    .order("trade_date", { ascending: false, nullsFirst: false });
+    .order("trade_date", { ascending: false, nullsFirst: false })
+    .range(offset, offset + limit - 1);
 
-  if (error || !data) return [];
+  if (error || !data) return { trades: [], total: 0 };
 
-  return data.map((row) => ({
+  const trades = data.map((row) => ({
     ...row,
     politicians: Array.isArray(row.politicians) ? row.politicians[0] ?? null : row.politicians ?? null,
   })) as TradeWithPolitician[];
+
+  return { trades, total: count ?? 0 };
 }

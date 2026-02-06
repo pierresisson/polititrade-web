@@ -4,6 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { getPartyColor, formatAmountRange, getDaysAgo } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeWithPolitician } from "@/lib/supabase/types";
@@ -12,9 +21,24 @@ type TradeFilter = "buy" | "sell" | "all";
 
 type Props = {
   trades: TradeWithPolitician[];
+  currentPage: number;
+  totalPages: number;
+  total: number;
 };
 
-export function FeedContent({ trades }: Props) {
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "ellipsis")[] = [1];
+  if (current > 3) pages.push("ellipsis");
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (current < total - 2) pages.push("ellipsis");
+  pages.push(total);
+  return pages;
+}
+
+export function FeedContent({ trades, currentPage, totalPages, total }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [filter, setFilter] = useState<TradeFilter>("all");
@@ -29,6 +53,10 @@ export function FeedContent({ trades }: Props) {
     if (days === 1) return t("liveFeed.yesterday");
     return `${days}${t("liveFeed.daysAgo")}`;
   };
+
+  const perPage = 25;
+  const from = (currentPage - 1) * perPage + 1;
+  const to = Math.min(currentPage * perPage, total);
 
   return (
     <div className="p-6 lg:p-8">
@@ -81,6 +109,16 @@ export function FeedContent({ trades }: Props) {
         </div>
       </div>
 
+      {/* Showing count */}
+      {total > 0 && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          {t("app.pagination.showing")
+            .replace("{from}", String(from))
+            .replace("{to}", String(to))
+            .replace("{total}", String(total))}
+        </p>
+      )}
+
       {/* Transactions table */}
       <div className="rounded-lg border border-border bg-card">
         <div className="overflow-x-auto">
@@ -129,7 +167,7 @@ export function FeedContent({ trades }: Props) {
                     </td>
                     <td className="px-4 py-4">
                       <div>
-                        <span className="font-mono font-semibold">{tx.ticker ?? "—"}</span>
+                        <span className="font-mono font-semibold">{tx.ticker ?? "\u2014"}</span>
                         <p className="text-sm text-muted-foreground">{tx.asset_name ?? ""}</p>
                       </div>
                     </td>
@@ -148,7 +186,7 @@ export function FeedContent({ trades }: Props) {
                         ) : tx.trade_type === "sell" ? (
                           <ArrowDownRight className="h-3.5 w-3.5" />
                         ) : null}
-                        {tx.trade_type === "buy" ? t("liveFeed.buy") : tx.trade_type === "sell" ? t("liveFeed.sell") : tx.trade_type ?? "—"}
+                        {tx.trade_type === "buy" ? t("liveFeed.buy") : tx.trade_type === "sell" ? t("liveFeed.sell") : tx.trade_type ?? "\u2014"}
                       </span>
                     </td>
                     <td className="px-4 py-4">
@@ -183,6 +221,55 @@ export function FeedContent({ trades }: Props) {
           </Button>
         </div>
       )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            {t("app.pagination.showing")
+              .replace("{from}", String((currentPage - 1) * 25 + 1))
+              .replace("{to}", String(Math.min(currentPage * 25, total)))
+              .replace("{total}", String(total))}
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={localePath(`/app/feed?page=${currentPage - 1}`)}
+                  text={t("app.pagination.previous")}
+                  aria-disabled={currentPage <= 1}
+                  className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              {getPageNumbers(currentPage, totalPages).map((p, i) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`e-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href={localePath(`/app/feed?page=${p}`)}
+                      isActive={p === currentPage}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href={localePath(`/app/feed?page=${currentPage + 1}`)}
+                  text={t("app.pagination.next")}
+                  aria-disabled={currentPage >= totalPages}
+                  className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
+

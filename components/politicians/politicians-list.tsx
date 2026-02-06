@@ -5,6 +5,15 @@ import Link from "next/link";
 import { Search, ArrowUpDown, Grid3X3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { PoliticianWithStats } from "@/lib/supabase/types";
@@ -13,9 +22,23 @@ import type { Party, Chamber } from "@/lib/supabase/types";
 type SortKey = "name" | "trades" | "volume";
 type ViewMode = "grid" | "table";
 
+const PER_PAGE = 24; // Divisible by 2, 3, 4 for grid layout
+
 type Props = {
   politicians: PoliticianWithStats[];
 };
+
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "ellipsis")[] = [1];
+  if (current > 3) pages.push("ellipsis");
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (current < total - 2) pages.push("ellipsis");
+  pages.push(total);
+  return pages;
+}
 
 export function PoliticiansList({ politicians }: Props) {
   const { t } = useTranslations();
@@ -26,6 +49,7 @@ export function PoliticiansList({ politicians }: Props) {
   const [sortBy, setSortBy] = useState<SortKey>("trades");
   const [sortDesc, setSortDesc] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [page, setPage] = useState(1);
 
   const filteredPoliticians = useMemo(() => {
     let result = [...politicians];
@@ -71,6 +95,13 @@ export function PoliticiansList({ politicians }: Props) {
     return result;
   }, [politicians, search, partyFilter, chamberFilter, sortBy, sortDesc]);
 
+  const totalPages = Math.ceil(filteredPoliticians.length / PER_PAGE);
+  const currentPage = Math.min(page, Math.max(1, totalPages));
+  const paginatedPoliticians = filteredPoliticians.slice(
+    (currentPage - 1) * PER_PAGE,
+    currentPage * PER_PAGE
+  );
+
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {
       setSortDesc(!sortDesc);
@@ -78,6 +109,11 @@ export function PoliticiansList({ politicians }: Props) {
       setSortBy(key);
       setSortDesc(true);
     }
+  };
+
+  const handleFilterChange = (setter: (v: any) => void, value: any) => {
+    setter(value);
+    setPage(1);
   };
 
   return (
@@ -91,7 +127,7 @@ export function PoliticiansList({ politicians }: Props) {
             type="text"
             placeholder={t("hero.searchPlaceholder")}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="pl-10"
           />
         </div>
@@ -101,7 +137,7 @@ export function PoliticiansList({ politicians }: Props) {
           {/* Party filter */}
           <div className="flex items-center gap-1 border border-border">
             <button
-              onClick={() => setPartyFilter("all")}
+              onClick={() => handleFilterChange(setPartyFilter, "all")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 partyFilter === "all"
                   ? "bg-foreground text-background"
@@ -111,7 +147,7 @@ export function PoliticiansList({ politicians }: Props) {
               {t("common.all")}
             </button>
             <button
-              onClick={() => setPartyFilter("D")}
+              onClick={() => handleFilterChange(setPartyFilter, "D")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 partyFilter === "D"
                   ? "bg-blue-600 text-white"
@@ -121,7 +157,7 @@ export function PoliticiansList({ politicians }: Props) {
               {t("politicians.democrat")}
             </button>
             <button
-              onClick={() => setPartyFilter("R")}
+              onClick={() => handleFilterChange(setPartyFilter, "R")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 partyFilter === "R"
                   ? "bg-red-600 text-white"
@@ -135,7 +171,7 @@ export function PoliticiansList({ politicians }: Props) {
           {/* Chamber filter */}
           <div className="flex items-center gap-1 border border-border">
             <button
-              onClick={() => setChamberFilter("all")}
+              onClick={() => handleFilterChange(setChamberFilter, "all")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 chamberFilter === "all"
                   ? "bg-foreground text-background"
@@ -145,7 +181,7 @@ export function PoliticiansList({ politicians }: Props) {
               {t("common.all")}
             </button>
             <button
-              onClick={() => setChamberFilter("House")}
+              onClick={() => handleFilterChange(setChamberFilter, "House")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 chamberFilter === "House"
                   ? "bg-foreground text-background"
@@ -155,7 +191,7 @@ export function PoliticiansList({ politicians }: Props) {
               {t("politicians.house")}
             </button>
             <button
-              onClick={() => setChamberFilter("Senate")}
+              onClick={() => handleFilterChange(setChamberFilter, "Senate")}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 chamberFilter === "Senate"
                   ? "bg-foreground text-background"
@@ -202,7 +238,7 @@ export function PoliticiansList({ politicians }: Props) {
       {/* Grid View */}
       {viewMode === "grid" && (
         <div className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredPoliticians.map((p, index) => (
+          {paginatedPoliticians.map((p, index) => (
             <Link
               key={p.id}
               href={localePath(`/politician/${p.id}`)}
@@ -211,7 +247,7 @@ export function PoliticiansList({ politicians }: Props) {
               {/* Rank + Avatar */}
               <div className="flex items-start justify-between">
                 <span className="font-display text-2xl font-semibold text-muted-foreground/20">
-                  {String(index + 1).padStart(2, "0")}
+                  {String((currentPage - 1) * PER_PAGE + index + 1).padStart(2, "0")}
                 </span>
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${getPartyBgColor(p.party)} ${getPartyColor(p.party)}`}
@@ -228,9 +264,9 @@ export function PoliticiansList({ politicians }: Props) {
                 <span className={getPartyColor(p.party)}>
                   {p.party === "D" ? t("politicians.democrat") : p.party === "R" ? t("politicians.republican") : "Ind"}
                 </span>
-                {" · "}
-                {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
-                {" · "}
+                {" \u00b7 "}
+                {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "\u2014"}
+                {" \u00b7 "}
                 {p.state ?? ""}
               </p>
 
@@ -246,7 +282,7 @@ export function PoliticiansList({ politicians }: Props) {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{t("politicians.topHolding")}</p>
-                  <p className="font-mono font-semibold">{p.top_ticker ?? "—"}</p>
+                  <p className="font-mono font-semibold">{p.top_ticker ?? "\u2014"}</p>
                 </div>
               </div>
             </Link>
@@ -299,7 +335,7 @@ export function PoliticiansList({ politicians }: Props) {
               </tr>
             </thead>
             <tbody>
-              {filteredPoliticians.map((p) => (
+              {paginatedPoliticians.map((p) => (
                 <tr
                   key={p.id}
                   className="group cursor-pointer border-b border-border transition-colors hover:bg-secondary/50"
@@ -334,11 +370,11 @@ export function PoliticiansList({ politicians }: Props) {
                     </span>
                   </td>
                   <td className="py-4 text-sm text-muted-foreground">
-                    {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
+                    {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "\u2014"}
                   </td>
                   <td className="py-4 text-right font-body font-semibold">{p.trade_count}</td>
                   <td className="py-4 text-right font-mono">{formatVolume(p.volume)}</td>
-                  <td className="py-4 font-mono font-semibold">{p.top_ticker ?? "—"}</td>
+                  <td className="py-4 font-mono font-semibold">{p.top_ticker ?? "\u2014"}</td>
                 </tr>
               ))}
             </tbody>
@@ -361,6 +397,51 @@ export function PoliticiansList({ politicians }: Props) {
           >
             {t("common.clearFilters")}
           </Button>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  text={t("app.pagination.previous")}
+                  onClick={(e) => { e.preventDefault(); setPage(Math.max(1, currentPage - 1)); }}
+                  aria-disabled={currentPage <= 1}
+                  className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              {getPageNumbers(currentPage, totalPages).map((p, i) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href="#"
+                      isActive={p === currentPage}
+                      onClick={(e) => { e.preventDefault(); setPage(p); }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  text={t("app.pagination.next")}
+                  onClick={(e) => { e.preventDefault(); setPage(Math.min(totalPages, currentPage + 1)); }}
+                  aria-disabled={currentPage >= totalPages}
+                  className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
     </section>

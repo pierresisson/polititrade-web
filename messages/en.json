@@ -360,6 +360,11 @@
       "groupAsset": "Assets",
       "groupTrade": "Trades"
     },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {from}\u2013{to} of {total}"
+    },
     "language": "Language",
     "languages": {
       "en": "English",

@@ -4,6 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 import { formatAmountRange, formatDate } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeWithPolitician } from "@/lib/supabase/types";
@@ -12,9 +21,24 @@ type TradeType = "buy" | "sell" | "all";
 
 type Props = {
   trades: TradeWithPolitician[];
+  currentPage: number;
+  totalPages: number;
+  total: number;
 };
 
-export function PoliticianTransactions({ trades }: Props) {
+function getPageNumbers(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "ellipsis")[] = [1];
+  if (current > 3) pages.push("ellipsis");
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (current < total - 2) pages.push("ellipsis");
+  pages.push(total);
+  return pages;
+}
+
+export function PoliticianTransactions({ trades, currentPage, totalPages, total }: Props) {
   const { t } = useTranslations();
   const localePath = useLocalePath();
   const [filter, setFilter] = useState<TradeType>("all");
@@ -50,7 +74,7 @@ export function PoliticianTransactions({ trades }: Props) {
             {t("politicianDetail.recentTransactions")}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {trades.length} {t("politicianDetail.tradesInLast12Months")}
+            {total} {t("politicianDetail.tradesInLast12Months")}
           </p>
         </div>
 
@@ -173,6 +197,54 @@ export function PoliticianTransactions({ trades }: Props) {
         </div>
       )}
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            {t("app.pagination.showing")
+              .replace("{from}", String((currentPage - 1) * 20 + 1))
+              .replace("{to}", String(Math.min(currentPage * 20, total)))
+              .replace("{total}", String(total))}
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={`?page=${currentPage - 1}`}
+                  text={t("app.pagination.previous")}
+                  aria-disabled={currentPage <= 1}
+                  className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              {getPageNumbers(currentPage, totalPages).map((p, i) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`e-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href={`?page=${p}`}
+                      isActive={p === currentPage}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href={`?page=${currentPage + 1}`}
+                  text={t("app.pagination.next")}
+                  aria-disabled={currentPage >= totalPages}
+                  className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
       {/* Source note */}
       <p className="mt-6 text-xs text-muted-foreground">
         {t("politicianDetail.dataSource")}
@@ -180,3 +252,4 @@ export function PoliticianTransactions({ trades }: Props) {
     </section>
   );
 }
+

@@ -9,6 +9,7 @@ import { getPoliticianById, getPoliticianTrades } from "@/lib/supabase/queries";
 
 type Props = {
   params: Promise<{ id: string; locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
@@ -25,16 +26,23 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default async function PoliticianPage({ params }: Props) {
+export default async function PoliticianPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const [politician, trades] = await Promise.all([
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  const perPage = 20;
+  const offset = (currentPage - 1) * perPage;
+
+  const [politician, { trades, total }] = await Promise.all([
     getPoliticianById(id),
-    getPoliticianTrades(id),
+    getPoliticianTrades(id, perPage, offset),
   ]);
 
   if (!politician) {
     notFound();
   }
+
+  const totalPages = Math.ceil(total / perPage);
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,7 +64,12 @@ export default async function PoliticianPage({ params }: Props) {
         <div className="editorial-rule-thin mx-auto max-w-6xl" />
 
         {/* Transactions */}
-        <PoliticianTransactions trades={trades} />
+        <PoliticianTransactions
+          trades={trades}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={total}
+        />
       </main>
       <Footer />
     </div>

@@ -19,7 +19,6 @@
   "header": {
     "tagline": "Données de Trading du Congrès",
     "updatedLive": "Mis à jour en direct",
-    "liveFeed": "Flux en Direct",
     "politicians": "Politiciens",
     "subscribe": "S'abonner",
     "dashboard": "Tableau de bord"
@@ -359,6 +358,11 @@
       "groupPerson": "Politiciens",
       "groupAsset": "Actions",
       "groupTrade": "Transactions"
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "showing": "Affichage de {from}\u2013{to} sur {total}"
     },
     "language": "Langue",
     "languages": {
