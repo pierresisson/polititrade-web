@@ -130,7 +130,7 @@ export function LiveFeed({ trades }: Props) {
                   </td>
                   <td className="py-4 text-right">
                     <span className="text-sm text-muted-foreground">
-                      {formatDaysAgo(getDaysAgo(tx.disclosure_date))}
+                      {formatDaysAgo(getDaysAgo(tx.disclosure_date ?? tx.trade_date))}
                     </span>
                   </td>
                 </m.tr>

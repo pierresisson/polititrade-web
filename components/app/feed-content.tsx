@@ -156,7 +156,7 @@ export function FeedContent({ trades }: Props) {
                     </td>
                     <td className="px-4 py-4 text-right">
                       <span className="text-sm text-muted-foreground">
-                        {formatDaysAgo(getDaysAgo(tx.disclosure_date))}
+                        {formatDaysAgo(getDaysAgo(tx.disclosure_date ?? tx.trade_date))}
                       </span>
                     </td>
                   </tr>

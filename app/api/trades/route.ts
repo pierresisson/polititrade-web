@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     .from("trades")
     .select("*", { count: "exact" })
     .eq("source", source)
-    .order("disclosure_date", { ascending: false, nullsFirst: false })
+    .order("trade_date", { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
 
   if (ticker) {

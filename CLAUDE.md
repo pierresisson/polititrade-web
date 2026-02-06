@@ -104,6 +104,7 @@ Centralized design tokens in `lib/theme.ts`. All colors defined in `app/globals.
 5. **All charts use Recharts** via `components/ui/chart.tsx` (`ChartContainer`, `ChartTooltipContent`, `ChartLegendContent`) — no custom SVG/canvas charts
 6. **Chart colors exclusively via tokens** — `theme.ts` chart tokens / CSS variables (`--chart-1` to `--chart-5`, `--chart-grid`, `--chart-text`)
 7. **Reduced motion support mandatory** — use `useChart().reducedMotion` to set `isAnimationActive={false}` on all Recharts elements
+8. **Data tables use body font** — All `<table>` / data grids must use `font-body` (Inter), never `font-display` (Fraunces). Headings font is reserved for page titles and section headings only.
 
 ### Landing Page Components
 

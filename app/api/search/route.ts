@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       .from("trades")
       .select("id, person_name, asset_name, ticker, trade_type")
       .or(`person_name.ilike.${pattern},asset_name.ilike.${pattern},ticker.ilike.${pattern}`)
-      .order("disclosure_date", { ascending: false })
+      .order("trade_date", { ascending: false, nullsFirst: false })
       .limit(LIMIT_PER_TYPE),
   ]);
 

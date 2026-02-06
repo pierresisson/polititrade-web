@@ -257,7 +257,7 @@ export function AppPoliticiansList({ politicians }: Props) {
                   <td className="px-4 py-4 text-sm text-muted-foreground">
                     {p.chamber === "House" ? t("politicians.house") : p.chamber === "Senate" ? t("politicians.senate") : "—"}
                   </td>
-                  <td className="px-4 py-4 text-right font-display font-semibold">{p.trade_count}</td>
+                  <td className="px-4 py-4 text-right font-body font-semibold">{p.trade_count}</td>
                   <td className="px-4 py-4 text-right font-mono">{formatVolume(p.volume)}</td>
                   <td className="px-4 py-4 font-mono font-semibold">{p.top_ticker ?? "—"}</td>
                   <td className="px-4 py-4 text-center">

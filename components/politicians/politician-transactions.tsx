@@ -148,7 +148,7 @@ export function PoliticianTransactions({ trades }: Props) {
                 </td>
                 <td className="py-4 text-muted-foreground">{formatDate(tx.trade_date)}</td>
                 <td className="py-4 text-right text-sm text-muted-foreground">
-                  {formatDate(tx.disclosure_date)}
+                  {formatDate(tx.disclosure_date ?? tx.trade_date)}
                 </td>
               </tr>
             ))}

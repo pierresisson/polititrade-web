@@ -231,7 +231,7 @@ export function AppPoliticianDetail({ politician, trades }: Props) {
                     </td>
                     <td className="px-4 py-4 text-muted-foreground">{formatDate(tx.trade_date)}</td>
                     <td className="px-4 py-4 text-right text-sm text-muted-foreground">
-                      {formatDate(tx.disclosure_date)}
+                      {formatDate(tx.disclosure_date ?? tx.trade_date)}
                     </td>
                   </tr>
                 ))}
