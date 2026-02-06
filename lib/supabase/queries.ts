@@ -7,6 +7,10 @@ import type {
   WeeklyStats,
 } from "./types";
 
+// Exclude non-stock assets (treasury notes, bonds, etc.) while keeping rows with null asset_name
+const STOCK_ONLY_FILTER =
+  "asset_name.is.null,and(asset_name.not.ilike.%Treasury%,asset_name.not.ilike.%Municipal Bond%,asset_name.not.ilike.%Savings Bond%)";
+
 export async function getTopPoliticians(
   limit = 12
 ): Promise<PoliticianWithStats[]> {
@@ -19,11 +23,12 @@ export async function getTopPoliticians(
 
   if (pError || !politicians) return [];
 
-  // Fetch all trades with politician_id set
+  // Fetch all trades with politician_id set (stocks only)
   const { data: trades, error: tError } = await supabase
     .from("trades")
     .select("politician_id, ticker, amount_min, amount_max")
-    .not("politician_id", "is", null);
+    .not("politician_id", "is", null)
+    .or(STOCK_ONLY_FILTER);
 
   if (tError || !trades) {
     // Return politicians with zero stats
@@ -97,6 +102,7 @@ export async function getRecentTrades(
       "id, person_name, asset_name, ticker, trade_type, trade_date, disclosure_date, amount_min, amount_max, politician_id, politicians(name, party, state, chamber)",
       { count: "exact" }
     )
+    .or(STOCK_ONLY_FILTER)
     .order("trade_date", { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
 
@@ -124,6 +130,7 @@ export async function getTrendingStocks(
     .from("trades")
     .select("ticker, asset_name")
     .not("ticker", "is", null)
+    .or(STOCK_ONLY_FILTER)
     .gte("trade_date", cutoff);
 
   if (error || !data) return [];
@@ -160,6 +167,7 @@ export async function getWeeklyStats(): Promise<WeeklyStats> {
   const { data, error } = await supabase
     .from("trades")
     .select("politician_id, amount_min, amount_max")
+    .or(STOCK_ONLY_FILTER)
     .gte("trade_date", cutoff);
 
   if (error || !data) {
@@ -197,11 +205,12 @@ export async function getPoliticianById(
 
   if (error || !politician) return null;
 
-  // Get stats from trades
+  // Get stats from trades (stocks only)
   const { data: trades } = await supabase
     .from("trades")
     .select("ticker, amount_min, amount_max")
-    .eq("politician_id", id);
+    .eq("politician_id", id)
+    .or(STOCK_ONLY_FILTER);
 
   let trade_count = 0;
   let volume = 0;
@@ -247,6 +256,7 @@ export async function getPoliticianTrades(
       { count: "exact" }
     )
     .eq("politician_id", politicianId)
+    .or(STOCK_ONLY_FILTER)
     .order("trade_date", { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
 
