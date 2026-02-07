@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ArrowDownRight, Star, Bell, ExternalLink, DollarSign, BarChart3, Briefcase } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ArrowDownRight, Bell, ExternalLink, DollarSign, BarChart3, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -19,6 +19,7 @@ import { TradeReturnBadge } from "@/components/performance/trade-return-badge";
 import { UnsupportedAssetBadge } from "@/components/performance/unsupported-asset-badge";
 import { TimeframeSelector } from "@/components/performance/timeframe-selector";
 import { PoliticianPerformanceSection } from "@/components/performance/politician-performance-section";
+import { FollowButton } from "@/components/app/follow-button";
 import type { PoliticianWithStats, TradeWithPolitician, TradePerformanceData, TradePerformanceMap, PoliticianPerformanceStats, Timeframe, AccessLevel } from "@/lib/supabase/types";
 
 type TradeFilter = "buy" | "sell" | "all";
@@ -135,10 +136,7 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Star className="h-4 w-4" />
-            Watch
-          </Button>
+          <FollowButton entityType="person" entityId={politician.id} accessLevel={accessLevel ?? "guest"} />
           <Button variant="outline" size="sm" className="gap-2">
             <Bell className="h-4 w-4" />
             Alert

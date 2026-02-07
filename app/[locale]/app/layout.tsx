@@ -1,22 +1,26 @@
+import { AppSidebar } from "@/components/app/sidebar";
 import { AppHeader } from "@/components/app/header";
 import { LazyCommandPalette } from "@/components/lazy-command-palette";
-import { SuspendedSidebar, SuspendedTestBanner } from "@/components/app/sidebar-loader";
+import { TestModeBanner } from "@/components/app/test-mode-banner";
 import { SidebarProvider } from "@/lib/sidebar-context";
+import { getUserAccessLevel } from "@/lib/auth";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user, isAdmin, isSimulated, level } = await getUserAccessLevel();
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
-        {/* Sidebar — streams in after auth resolves */}
-        <SuspendedSidebar />
+        {/* Sidebar */}
+        <AppSidebar user={user} isAdmin={isAdmin} />
 
-        {/* Main content — renders immediately */}
+        {/* Main content */}
         <div className="flex flex-1 flex-col">
-          <SuspendedTestBanner />
+          {isSimulated && <TestModeBanner level={level} />}
           <AppHeader />
           <main className="flex-1 overflow-auto">
             {children}
