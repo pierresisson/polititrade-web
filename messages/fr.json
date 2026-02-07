@@ -439,6 +439,10 @@
       "next": "Suivant",
       "showing": "Affichage de {from}\u2013{to} sur {total}"
     },
+    "sidebar": {
+      "collapse": "Réduire la barre latérale",
+      "expand": "Développer la barre latérale"
+    },
     "language": "Langue",
     "languages": {
       "en": "English",

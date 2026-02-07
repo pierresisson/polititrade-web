@@ -440,6 +440,10 @@
       "next": "Next",
       "showing": "Showing {from}\u2013{to} of {total}"
     },
+    "sidebar": {
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
+    },
     "language": "Language",
     "languages": {
       "en": "English",
