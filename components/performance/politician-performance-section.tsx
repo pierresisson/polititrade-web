@@ -122,7 +122,7 @@ export function PoliticianPerformanceSection({ stats, accessLevel, cumulativeDat
   ].filter((s) => s.visible);
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-8 lg:py-12">
+    <section className="rounded-lg border border-border bg-card p-6">
       {/* Section header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -167,7 +167,7 @@ export function PoliticianPerformanceSection({ stats, accessLevel, cumulativeDat
       </div>
 
       {/* Stats grid */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={`mb-6 grid gap-4 sm:grid-cols-2 ${statCards.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
         {statCards.map((card) => (
           <div
             key={card.label}

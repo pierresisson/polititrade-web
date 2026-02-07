@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { LogOut, Trash2, ShieldCheck } from "lucide-react";
+import { useState, useEffect, useTransition, useCallback } from "react";
+import { LogOut, Trash2, ShieldCheck, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,14 +25,29 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations, useLocale } from "@/lib/i18n-context";
 import { createClient } from "@/lib/supabase/client";
 import { signOut, deleteAccount } from "@/lib/auth/actions";
+import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
+
+type TestMode = "auto" | "guest" | "account" | "premium";
+
+function getCookie(name: string): string | undefined {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
 
 export function SettingsContent() {
   const { t } = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [testMode, setTestMode] = useState<TestMode>("auto");
+
+  const readTestMode = useCallback(() => {
+    const cookie = getCookie("admin_test_mode") as TestMode | undefined;
+    setTestMode(cookie && ["guest", "account", "premium"].includes(cookie) ? cookie : "auto");
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -44,10 +59,23 @@ export function SettingsContent() {
           .select("is_admin")
           .eq("id", user.id)
           .single()
-          .then(({ data }) => setIsAdmin(data?.is_admin === true));
+          .then(({ data }) => {
+            setIsAdmin(data?.is_admin === true);
+            if (data?.is_admin) readTestMode();
+          });
       }
     });
-  }, []);
+  }, [readTestMode]);
+
+  async function handleTestModeChange(mode: TestMode) {
+    setTestMode(mode);
+    await fetch("/api/admin/test-mode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode }),
+    });
+    router.refresh();
+  }
 
   return (
     <div className="p-6 lg:p-8">
@@ -94,6 +122,40 @@ export function SettingsContent() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Test mode card (admin only) */}
+        {isAdmin && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FlaskConical className="h-5 w-5" />
+                {t("app.admin.testMode.title")}
+              </CardTitle>
+              <CardDescription>
+                {t("app.admin.testMode.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {testMode !== "auto" && (
+                <Badge variant="outline" className="border-amber-500 text-amber-600">
+                  {t("app.admin.testMode.simulationActive")}
+                </Badge>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {(["auto", "guest", "account", "premium"] as const).map((mode) => (
+                  <Button
+                    key={mode}
+                    variant={testMode === mode ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleTestModeChange(mode)}
+                  >
+                    {t(`app.admin.testMode.${mode}`)}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Danger zone card */}
         <Card className="border-destructive/30">

@@ -397,6 +397,17 @@
         "success": "Ingestion terminée",
         "failed": "Échec de l'ingestion"
       },
+      "testMode": {
+        "title": "Mode test",
+        "description": "Simuler un niveau d'accès pour tester les paywalls",
+        "auto": "Auto (Admin)",
+        "guest": "Guest",
+        "account": "Account",
+        "premium": "Premium",
+        "simulationActive": "Simulation active",
+        "bannerText": "Mode test : {level}",
+        "disable": "Désactiver"
+      },
       "trades": {
         "title": "Revue des trades",
         "person": "Personne",

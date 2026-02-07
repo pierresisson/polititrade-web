@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Bell, ExternalLink } from "lucide-react";
-import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/helpers";
+import { getInitials, getPartyColor, getPartyBgColor, formatDisplayName } from "@/lib/helpers";
 import { useTranslations } from "@/lib/i18n-context";
 import type { PoliticianWithStats } from "@/lib/supabase/types";
 
@@ -28,7 +28,7 @@ export function PoliticianProfile({ politician }: Props) {
           {/* Info */}
           <div>
             <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-              {politician.name}
+              {formatDisplayName(politician.name)}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               {/* Party badge */}

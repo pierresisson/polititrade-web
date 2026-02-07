@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { getPartyColor, formatAmountRange, getDaysAgo } from "@/lib/helpers";
+import { getPartyColor, formatAmountRange, getDaysAgo, formatDisplayName } from "@/lib/helpers";
 import type { TradeWithPolitician } from "@/lib/supabase/types";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
@@ -98,7 +98,7 @@ export function LiveFeed({ trades }: Props) {
                   <td className="py-4">
                     <div className="flex items-center gap-2">
                       <span className="font-medium group-hover:text-primary">
-                        {tx.politicians?.name ?? tx.person_name}
+                        {formatDisplayName(tx.politicians?.name ?? tx.person_name ?? "")}
                       </span>
                       <span className={`text-xs font-medium ${getPartyColor(party)}`}>
                         {party ? `${party}-${state}` : state}

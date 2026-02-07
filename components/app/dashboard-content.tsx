@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight, TrendingUp, Users, Activity } from "lucide-react";
-import { getPartyColor, formatAmountRange, formatVolume } from "@/lib/helpers";
+import { getPartyColor, formatAmountRange, formatVolume, formatDisplayName } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeWithPolitician, PoliticianWithStats, TrendingStock, WeeklyStats } from "@/lib/supabase/types";
 
@@ -90,7 +90,7 @@ export function DashboardContent({ trades, politicians, trendingStocks, stats }:
                     )}
                   </span>
                   <div>
-                    <p className="font-medium">{tx.politicians?.name ?? tx.person_name}</p>
+                    <p className="font-medium">{formatDisplayName(tx.politicians?.name ?? tx.person_name ?? "")}</p>
                     <p className="text-sm text-muted-foreground">
                       <span className="font-mono font-semibold">{tx.ticker ?? "—"}</span>
                       {" · "}
@@ -129,7 +129,7 @@ export function DashboardContent({ trades, politicians, trendingStocks, stats }:
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <p className="font-medium">{p.name}</p>
+                    <p className="font-medium">{formatDisplayName(p.name)}</p>
                     <p className="text-sm text-muted-foreground">
                       <span className={getPartyColor(p.party)}>
                         {p.party === "D" ? "Dem" : p.party === "R" ? "Rep" : "Ind"}

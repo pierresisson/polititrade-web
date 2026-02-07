@@ -1,26 +1,15 @@
 import { AppSidebar } from "@/components/app/sidebar";
 import { AppHeader } from "@/components/app/header";
 import { LazyCommandPalette } from "@/components/lazy-command-palette";
-import { createClient } from "@/lib/supabase/server";
+import { TestModeBanner } from "@/components/app/test-mode-banner";
+import { getUserAccessLevel } from "@/lib/auth";
 
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch user + admin status server-side (shared with sidebar)
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let isAdmin = false;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-    isAdmin = profile?.is_admin === true;
-  }
+  const { user, isAdmin, isSimulated, level } = await getUserAccessLevel();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -29,6 +18,7 @@ export default async function AppLayout({
 
       {/* Main content */}
       <div className="flex flex-1 flex-col">
+        {isSimulated && <TestModeBanner level={level} />}
         <AppHeader />
         <main className="flex-1 overflow-auto">
           {children}

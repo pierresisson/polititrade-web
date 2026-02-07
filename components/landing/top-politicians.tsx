@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
+import { getInitials, getPartyColor, getPartyBgColor, formatVolume, formatDisplayName } from "@/lib/helpers";
 import type { PoliticianWithStats } from "@/lib/supabase/types";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import {
@@ -81,7 +81,7 @@ export function TopPoliticians({ politicians }: Props) {
 
                 {/* Name */}
                 <h3 className="mt-3 font-display text-lg font-semibold leading-tight group-hover:text-primary">
-                  {p.name}
+                  {formatDisplayName(p.name)}
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   <span className={getPartyColor(p.party)}>

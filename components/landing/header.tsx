@@ -154,12 +154,13 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="h-auto w-auto rounded-full p-0 hover:bg-transparent"
+                    className="h-auto w-auto cursor-pointer rounded-full p-0 hover:bg-transparent"
                   >
                     <Avatar size="sm">
                       <AvatarImage
                         src={user.user_metadata?.avatar_url}
                         alt={user.user_metadata?.full_name || ""}
+                        referrerPolicy="no-referrer"
                       />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
@@ -264,6 +265,7 @@ export function Header() {
                           <AvatarImage
                             src={user.user_metadata?.avatar_url}
                             alt={user.user_metadata?.full_name || ""}
+                            referrerPolicy="no-referrer"
                           />
                           <AvatarFallback>{initials}</AvatarFallback>
                         </Avatar>

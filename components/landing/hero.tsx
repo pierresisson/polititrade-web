@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { getInitials, getPartyColor, getPartyBgColor } from "@/lib/helpers";
+import { getInitials, getPartyColor, getPartyBgColor, formatDisplayName } from "@/lib/helpers";
 import type { PoliticianWithStats, TrendingStock } from "@/lib/supabase/types";
 import { HeroIllustration } from "./hero-illustration";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
@@ -92,7 +92,7 @@ export function Hero({ politicians, trendingStocks }: Props) {
                     </div>
                     <div>
                       <p className="text-sm font-medium leading-tight group-hover:text-primary">
-                        {politician.name}
+                        {formatDisplayName(politician.name)}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         {politician.party === "D" ? "Dem" : politician.party === "R" ? "Rep" : "Ind"} · {politician.chamber ?? ""}

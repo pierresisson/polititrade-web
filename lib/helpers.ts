@@ -1,11 +1,22 @@
 // Pure utility functions for PolitiTrades UI
 
 export function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+  const display = formatDisplayName(name);
+  const parts = display.split(" ").filter(Boolean);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+const SUFFIXES = new Set(["hon.", "hon", "jr.", "jr", "sr.", "sr", "ii", "iii", "iv", "md", "phd"]);
+
+export function formatDisplayName(name: string): string {
+  // Handle "Last, First Middle Suffix" format from PTR data
+  if (!name.includes(",")) return name;
+  const [last, rest] = name.split(",", 2);
+  if (!rest) return name;
+  const parts = rest.trim().split(/\s+/).filter((p) => !SUFFIXES.has(p.toLowerCase()));
+  return [...parts, last.trim()].join(" ");
 }
 
 export function getPartyColor(party: string | null): string {

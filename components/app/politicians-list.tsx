@@ -14,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getInitials, getPartyColor, getPartyBgColor, formatVolume } from "@/lib/helpers";
+import { getInitials, getPartyColor, getPartyBgColor, formatVolume, formatDisplayName } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { PoliticianWithStats, Party, Chamber } from "@/lib/supabase/types";
 
@@ -272,7 +272,7 @@ export function AppPoliticiansList({ politicians }: Props) {
                         {getInitials(p.name)}
                       </div>
                       <div>
-                        <p className="font-medium group-hover:text-primary">{p.name}</p>
+                        <p className="font-medium group-hover:text-primary">{formatDisplayName(p.name)}</p>
                         <p className="text-xs text-muted-foreground">{p.state ?? ""}</p>
                       </div>
                     </Link>

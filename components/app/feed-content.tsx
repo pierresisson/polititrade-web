@@ -13,7 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getPartyColor, formatAmountRange, getDaysAgo } from "@/lib/helpers";
+import { getPartyColor, formatAmountRange, getDaysAgo, formatDisplayName } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import type { TradeWithPolitician } from "@/lib/supabase/types";
 
@@ -158,7 +158,7 @@ export function FeedContent({ trades, currentPage, totalPages, total }: Props) {
                         className="flex items-center gap-2"
                       >
                         <span className="font-medium group-hover:text-primary">
-                          {tx.politicians?.name ?? tx.person_name}
+                          {formatDisplayName(tx.politicians?.name ?? tx.person_name ?? "")}
                         </span>
                         <span className={`text-xs font-medium ${getPartyColor(party)}`}>
                           {party ? `${party}-${state}` : state}

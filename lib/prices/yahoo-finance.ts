@@ -1,6 +1,8 @@
-import yahooFinance from "yahoo-finance2";
+import YahooFinance from "yahoo-finance2";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+const yahooFinance = new YahooFinance();
 
 export type PriceRow = {
   ticker: string;
@@ -24,16 +26,6 @@ async function throttle() {
   lastCallAt = Date.now();
 }
 
-type HistoricalRow = {
-  date: Date;
-  open?: number;
-  high?: number;
-  low?: number;
-  close: number;
-  adjClose?: number;
-  volume?: number;
-};
-
 export async function fetchHistoricalPrices(
   ticker: string,
   startDate: string,
@@ -41,19 +33,21 @@ export async function fetchHistoricalPrices(
 ): Promise<PriceRow[]> {
   await throttle();
 
-  const result = (await yahooFinance.historical(ticker, {
+  const result = await yahooFinance.chart(ticker, {
     period1: startDate,
     period2: endDate,
-  })) as HistoricalRow[];
+  });
 
-  return result.map((row) => ({
+  const quotes = result.quotes ?? [];
+
+  return quotes.map((row) => ({
     ticker,
     price_date: row.date.toISOString().split("T")[0],
     open: row.open ?? null,
     high: row.high ?? null,
     low: row.low ?? null,
-    close: row.close,
-    adj_close: row.adjClose ?? null,
+    close: row.close!,
+    adj_close: row.adjclose ?? null,
     volume: row.volume ?? null,
   }));
 }

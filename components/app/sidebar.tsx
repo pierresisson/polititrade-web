@@ -13,7 +13,7 @@ import { stripLocaleFromPathname, buildLocalePath } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { navigationItems, adminNavigationItems } from "@/lib/command-items";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -150,8 +150,13 @@ export function AppSidebar({ user, isAdmin }: AppSidebarProps) {
         <div className="border-t border-border p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex w-full items-center gap-3 rounded-md bg-primary/5 px-3 py-2 text-left transition-colors hover:bg-primary/10">
+              <button className="flex w-full cursor-pointer items-center gap-3 rounded-md bg-primary/5 px-3 py-2 text-left transition-colors hover:bg-primary/10">
                 <Avatar>
+                  <AvatarImage
+                    src={user.user_metadata?.avatar_url}
+                    alt={user.user_metadata?.full_name || ""}
+                    referrerPolicy="no-referrer"
+                  />
                   <AvatarFallback className="bg-primary text-xs font-semibold text-primary-foreground">
                     {userInitials}
                   </AvatarFallback>

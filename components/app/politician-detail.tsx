@@ -13,7 +13,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { getInitials, getPartyColor, getPartyBgColor, formatAmountRange, formatDate, formatVolume } from "@/lib/helpers";
+import { getInitials, getPartyColor, getPartyBgColor, formatAmountRange, formatDate, formatVolume, formatDisplayName } from "@/lib/helpers";
 import { useTranslations, useLocalePath } from "@/lib/i18n-context";
 import { TradeReturnBadge } from "@/components/performance/trade-return-badge";
 import { UnsupportedAssetBadge } from "@/components/performance/unsupported-asset-badge";
@@ -112,7 +112,7 @@ export function AppPoliticianDetail({ politician, trades, currentPage, totalPage
 
           <div>
             <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-              {politician.name}
+              {formatDisplayName(politician.name)}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <span

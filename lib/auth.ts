@@ -1,6 +1,7 @@
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
-type AccessLevel = "guest" | "account" | "premium";
+export type AccessLevel = "guest" | "account" | "premium";
 
 export async function getUserAccessLevel() {
   const supabase = await createClient();
@@ -9,7 +10,7 @@ export async function getUserAccessLevel() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { level: "guest" as AccessLevel, user: null };
+    return { level: "guest" as AccessLevel, user: null, isAdmin: false, isSimulated: false };
   }
 
   const { data: profile } = await supabase
@@ -21,5 +22,14 @@ export async function getUserAccessLevel() {
   const level: AccessLevel = profile?.is_premium ? "premium" : "account";
   const isAdmin: boolean = profile?.is_admin === true;
 
-  return { level, user, isAdmin };
+  if (isAdmin) {
+    const cookieStore = await cookies();
+    const testMode = cookieStore.get("admin_test_mode")?.value as AccessLevel | undefined;
+    if (testMode && ["guest", "account", "premium"].includes(testMode)) {
+      return { level: testMode, user, isAdmin, isSimulated: true };
+    }
+    return { level: "premium" as AccessLevel, user, isAdmin, isSimulated: false };
+  }
+
+  return { level, user, isAdmin: false, isSimulated: false };
 }
