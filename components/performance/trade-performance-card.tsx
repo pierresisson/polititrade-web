@@ -150,7 +150,7 @@ export function TradePerformanceCard({
 
           {/* Mini chart */}
           {showChart && priceHistory && priceHistory.length > 1 && (
-            <ChartContainer config={chartConfig} className="mb-4 h-32">
+            <ChartContainer config={chartConfig} className="mb-4 h-32" minHeight={128}>
               <MiniChart data={priceHistory} />
             </ChartContainer>
           )}

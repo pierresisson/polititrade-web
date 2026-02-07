@@ -20,78 +20,24 @@ export async function getTopPoliticians(
 ): Promise<PoliticianWithStats[]> {
   const supabase = await createClient();
 
-  // Fetch all politicians
-  const { data: politicians, error: pError } = await supabase
-    .from("politicians")
-    .select("id, name, party, chamber, state, image_url");
-
-  if (pError || !politicians) return [];
-
-  // Fetch all trades with politician_id set (stocks only)
-  const { data: trades, error: tError } = await supabase
-    .from("trades")
-    .select("politician_id, ticker, amount_min, amount_max")
-    .not("politician_id", "is", null)
-    .or(STOCK_ONLY_FILTER);
-
-  if (tError || !trades) {
-    // Return politicians with zero stats
-    return politicians.slice(0, limit).map((p) => ({
-      ...p,
-      trade_count: 0,
-      volume: 0,
-      top_ticker: null,
-    }));
-  }
-
-  // Group trades by politician_id
-  const statsMap = new Map<
-    string,
-    { count: number; volume: number; tickers: Map<string, number> }
-  >();
-
-  for (const t of trades) {
-    if (!t.politician_id) continue;
-    let entry = statsMap.get(t.politician_id);
-    if (!entry) {
-      entry = { count: 0, volume: 0, tickers: new Map() };
-      statsMap.set(t.politician_id, entry);
-    }
-    entry.count++;
-    const mid =
-      t.amount_min != null && t.amount_max != null
-        ? (t.amount_min + t.amount_max) / 2
-        : t.amount_min ?? t.amount_max ?? 0;
-    entry.volume += mid;
-    if (t.ticker) {
-      entry.tickers.set(t.ticker, (entry.tickers.get(t.ticker) ?? 0) + 1);
-    }
-  }
-
-  const result: PoliticianWithStats[] = politicians.map((p) => {
-    const stats = statsMap.get(p.id);
-    let top_ticker: string | null = null;
-    if (stats) {
-      let maxCount = 0;
-      for (const [ticker, count] of stats.tickers) {
-        if (count > maxCount) {
-          maxCount = count;
-          top_ticker = ticker;
-        }
-      }
-    }
-    return {
-      ...p,
-      trade_count: stats?.count ?? 0,
-      volume: stats?.volume ?? 0,
-      top_ticker,
-    };
+  // Use RPC for SQL-level aggregation (much faster than fetching all trades to JS)
+  const { data, error } = await supabase.rpc("get_top_politicians", {
+    p_limit: limit,
   });
 
-  // Sort by trade_count descending
-  result.sort((a, b) => b.trade_count - a.trade_count);
+  if (error || !data) return [];
 
-  return result.slice(0, limit);
+  return (data as Array<Record<string, unknown>>).map((row) => ({
+    id: row.id as string,
+    name: row.name as string,
+    party: (row.party as string) ?? null,
+    chamber: (row.chamber as string) ?? null,
+    state: (row.state as string) ?? null,
+    image_url: (row.image_url as string) ?? null,
+    trade_count: Number(row.trade_count),
+    volume: Number(row.volume),
+    top_ticker: (row.top_ticker as string) ?? null,
+  }));
 }
 
 export async function getRecentTrades(

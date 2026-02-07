@@ -208,7 +208,7 @@ export function PoliticianPerformanceSection({ stats, accessLevel, cumulativeDat
       {showCumulative && cumulativeData && cumulativeData.length > 1 ? (
         <div className="mb-6 rounded-lg border border-border bg-card p-4">
           <h3 className="mb-3 text-sm font-medium">{t("performance.cumulativeChart")}</h3>
-          <ChartContainer config={chartConfig} className="h-64">
+          <ChartContainer config={chartConfig} className="h-64" minHeight={256}>
             <CumulativeChart data={cumulativeData} showSP500={showSP500} />
           </ChartContainer>
         </div>
