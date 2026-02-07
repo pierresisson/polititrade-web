@@ -13,7 +13,7 @@ import { getTopPoliticians, getRecentTrades, getTrendingStocks } from "@/lib/sup
 export default async function LandingPage() {
   const [politicians, { trades }, trendingStocks] = await Promise.all([
     getTopPoliticians(12),
-    getRecentTrades(20),
+    getRecentTrades(20, 0),
     getTrendingStocks(5),
   ]);
 

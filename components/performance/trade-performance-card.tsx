@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Calendar, Lock } from "lucide-react";
+import { ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { ChartContainer, ChartTooltipContent, useChart } from "@/components/ui/chart";
 import { useTranslations } from "@/lib/i18n-context";
 import { formatReturn, getReturnColor, formatPrice, formatDate } from "@/lib/helpers";
 import { canViewChart, canViewSP500 } from "@/lib/prices/access-control";
 import type { TradePerformanceData, PricePoint, AccessLevel, Timeframe } from "@/lib/supabase/types";
+import { PremiumLockedOverlay } from "@/components/premium-locked-overlay";
 import { PerformanceDisclaimer } from "./performance-disclaimer";
 
 type Props = {
@@ -142,10 +143,11 @@ export function TradePerformanceCard({
           )}
 
           {!showSP500 && (
-            <div className="mb-4 flex items-center gap-2 rounded bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
-              <Lock className="h-3 w-3" />
-              {t("performance.upgradeForSP500")}
-            </div>
+            <PremiumLockedOverlay
+              description={t("performance.upgradeForSP500")}
+              variant="inline"
+              className="mb-4"
+            />
           )}
 
           {/* Mini chart */}
@@ -156,10 +158,11 @@ export function TradePerformanceCard({
           )}
 
           {!showChart && (
-            <div className="mb-4 flex items-center justify-center gap-2 rounded border border-dashed border-border py-8 text-xs text-muted-foreground">
-              <Lock className="h-3 w-3" />
-              {t("performance.upgradeForChart")}
-            </div>
+            <PremiumLockedOverlay
+              description={t("performance.upgradeForChart")}
+              variant="card"
+              className="mb-4"
+            />
           )}
 
           <PerformanceDisclaimer

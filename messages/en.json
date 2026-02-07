@@ -133,6 +133,7 @@
     "upgradeForSP500": "Upgrade to Premium to compare with S&P 500",
     "upgradeForCumulative": "Upgrade to Premium to view cumulative performance",
     "upgradeForAlpha": "Upgrade to Premium to view alpha",
+    "upgradeForPremiumAnalytics": "Upgrade to Premium for alpha comparison and cumulative performance chart",
     "disclaimer": "Prices sourced from Yahoo Finance. Past performance does not guarantee future results. This is not financial advice.",
     "disclaimerEstimated": "Some trade dates are estimated from disclosure dates and may not reflect actual execution date.",
     "filterBuys": "Buys",
@@ -312,6 +313,11 @@
     "disclaimer": "PolitiTrades provides information for educational and research purposes only. This is not investment advice. Stock trading involves risk; past performance does not guarantee future results. Data sourced from official U.S. government disclosure filings.",
     "copyright": "PolitiTrades. All rights reserved."
   },
+  "premium": {
+    "locked": "Premium Feature",
+    "unlock": "Unlock Premium",
+    "upgradeAccount": "Upgrade"
+  },
   "auth": {
     "signOut": "Sign out",
     "signingIn": "Signing in...",
@@ -364,7 +370,25 @@
       "noRecentActivity": "No recent activity from your watchlist",
       "quickStats": "Quick Stats",
       "totalWatched": "Total watched",
-      "tradesThisWeek": "Trades this week"
+      "tradesThisWeek": "Trades this week",
+      "added": "Added to your watchlist",
+      "removed": "Removed from your watchlist",
+      "limitReached": "Watchlist limit reached ({limit} items). Upgrade to add more.",
+      "signInPrompt": "Sign in to follow",
+      "signInDescription": "Create a free account to build your personal watchlist and track politicians and stocks.",
+      "searchPlaceholder": "Search politicians or stocks...",
+      "itemCount": "{count}/{limit}",
+      "itemCountUnlimited": "{count} items",
+      "remove": "Remove",
+      "watching": "Following",
+      "watch": "Follow",
+      "upgrade": "Upgrade for unlimited",
+      "signInToAccess": "Sign in to access your watchlist",
+      "signInToAccessDescription": "Create a free account to follow politicians and stocks.",
+      "signIn": "Sign in",
+      "addSearchTitle": "Add to watchlist",
+      "trades": "trades",
+      "noSearchResults": "No results found"
     },
     "settings": {
       "title": "Settings",

@@ -1,9 +1,14 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export type AccessLevel = "guest" | "account" | "premium";
 
-export async function getUserAccessLevel() {
+/**
+ * Per-request cached version — safe to call from layout + page
+ * without hitting Supabase twice.
+ */
+export const getUserAccessLevel = cache(async function getUserAccessLevel() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,4 +37,4 @@ export async function getUserAccessLevel() {
   }
 
   return { level, user, isAdmin: false, isSimulated: false };
-}
+});

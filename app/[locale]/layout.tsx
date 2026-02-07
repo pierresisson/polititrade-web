@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "../globals.css";
 import { locales, getDictionary, type Locale } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-context";
@@ -42,6 +43,7 @@ export default async function LocaleLayout({
         className={`${fraunces.variable} ${inter.variable} font-body antialiased`}
       >
         <I18nProvider dictionary={dictionary}>{children}</I18nProvider>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

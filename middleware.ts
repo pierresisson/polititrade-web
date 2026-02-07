@@ -70,8 +70,11 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    // Refreshes the session
-    await supabase.auth.getUser()
+    // Refresh session cookie — getSession() only hits the network when
+    // the JWT is actually expired, unlike getUser() which always does a
+    // round-trip to the Supabase Auth server.  The real security-sensitive
+    // validation (getUser) still runs inside getUserAccessLevel().
+    await supabase.auth.getSession()
   }
 
   // 6. Store locale preference cookie

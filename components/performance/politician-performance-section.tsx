@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Target, BarChart3, Lock } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { ChartContainer, ChartTooltipContent, ChartLegendContent, useChart } from "@/components/ui/chart";
 import { useTranslations } from "@/lib/i18n-context";
 import { formatReturn, getReturnColor } from "@/lib/helpers";
 import { canViewCumulative, canViewSP500 } from "@/lib/prices/access-control";
 import type { PoliticianPerformanceStats, AccessLevel } from "@/lib/supabase/types";
+import { PremiumLockedOverlay } from "@/components/premium-locked-overlay";
 import { PerformanceDisclaimer } from "./performance-disclaimer";
 
 type Props = {
@@ -187,37 +188,33 @@ export function PoliticianPerformanceSection({ stats, accessLevel, cumulativeDat
         ))}
       </div>
 
-      {/* Alpha vs S&P 500 */}
-      {showSP500 && stats.vs_sp500_1y != null && (
-        <div className="mb-6 rounded-lg border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">{t("performance.alpha")}</p>
-          <p className={`mt-1 font-mono text-xl font-semibold ${getReturnColor(stats.vs_sp500_1y)}`}>
-            {formatReturn(stats.vs_sp500_1y)}
-          </p>
-        </div>
+      {/* Premium section: Alpha + Cumulative chart */}
+      {showSP500 ? (
+        <>
+          {stats.vs_sp500_1y != null && (
+            <div className="mb-6 rounded-lg border border-border bg-card p-4">
+              <p className="text-xs text-muted-foreground">{t("performance.alpha")}</p>
+              <p className={`mt-1 font-mono text-xl font-semibold ${getReturnColor(stats.vs_sp500_1y)}`}>
+                {formatReturn(stats.vs_sp500_1y)}
+              </p>
+            </div>
+          )}
+          {showCumulative && cumulativeData && cumulativeData.length > 1 && (
+            <div className="mb-6 rounded-lg border border-border bg-card p-4">
+              <h3 className="mb-3 text-sm font-medium">{t("performance.cumulativeChart")}</h3>
+              <ChartContainer config={chartConfig} className="h-64" minHeight={256}>
+                <CumulativeChart data={cumulativeData} showSP500={showSP500} />
+              </ChartContainer>
+            </div>
+          )}
+        </>
+      ) : (
+        <PremiumLockedOverlay
+          description={t("performance.upgradeForPremiumAnalytics")}
+          variant="card"
+          className="mb-6"
+        />
       )}
-
-      {!showSP500 && (
-        <div className="mb-6 flex items-center gap-2 rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          <Lock className="h-4 w-4" />
-          {t("performance.upgradeForAlpha")}
-        </div>
-      )}
-
-      {/* Cumulative performance chart */}
-      {showCumulative && cumulativeData && cumulativeData.length > 1 ? (
-        <div className="mb-6 rounded-lg border border-border bg-card p-4">
-          <h3 className="mb-3 text-sm font-medium">{t("performance.cumulativeChart")}</h3>
-          <ChartContainer config={chartConfig} className="h-64" minHeight={256}>
-            <CumulativeChart data={cumulativeData} showSP500={showSP500} />
-          </ChartContainer>
-        </div>
-      ) : !showCumulative ? (
-        <div className="mb-6 flex items-center justify-center gap-2 rounded-lg border border-dashed border-border py-12 text-sm text-muted-foreground">
-          <Lock className="h-4 w-4" />
-          {t("performance.upgradeForCumulative")}
-        </div>
-      ) : null}
 
       <PerformanceDisclaimer />
     </section>
