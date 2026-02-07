@@ -1,6 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { defaultLocale, isValidLocale } from '@/lib/i18n'
+import { defaultLocale, locales, isValidLocale } from '@/lib/i18n'
+
+/**
+ * Detect preferred locale from cookie (explicit choice) or Accept-Language header.
+ */
+function detectLocale(request: NextRequest): string {
+  // 1. Explicit user choice via cookie
+  const cookie = request.cookies.get('NEXT_LOCALE')?.value
+  if (cookie && isValidLocale(cookie)) return cookie
+
+  // 2. Browser Accept-Language header
+  const acceptLang = request.headers.get('Accept-Language')
+  if (acceptLang) {
+    // Parse e.g. "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7"
+    const preferred = acceptLang
+      .split(',')
+      .map((part) => {
+        const [lang, q] = part.trim().split(';q=')
+        return { lang: lang.split('-')[0].toLowerCase(), q: q ? parseFloat(q) : 1 }
+      })
+      .sort((a, b) => b.q - a.q)
+      .find((entry) => (locales as readonly string[]).includes(entry.lang))
+
+    if (preferred) return preferred.lang
+  }
+
+  return defaultLocale
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -28,14 +55,24 @@ export async function middleware(request: NextRequest) {
   }
 
   // 3. Pass-through: /fr/... (non-default locale) — continue
-  // 4. Rewrite: /... (no locale) → /en/... internally
+  // 4. Detect preferred locale and redirect/rewrite accordingly
   let response: NextResponse
 
   if (firstSegment && isValidLocale(firstSegment)) {
     // Non-default locale path (e.g. /fr/...) — pass through
     response = NextResponse.next({ request })
   } else {
-    // No locale prefix — rewrite to /en/... internally
+    // No locale prefix — detect preferred locale
+    const preferred = detectLocale(request)
+
+    if (preferred !== defaultLocale) {
+      // Redirect to preferred locale (e.g. /fr/...)
+      const url = request.nextUrl.clone()
+      url.pathname = `/${preferred}${pathname === '/' ? '' : pathname}`
+      return NextResponse.redirect(url, 307)
+    }
+
+    // Default locale — rewrite to /en/... internally
     const url = request.nextUrl.clone()
     url.pathname = `/${defaultLocale}${pathname}`
     response = NextResponse.rewrite(url, { request })
